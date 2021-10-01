@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 0
+    path: Assets/toio-sdk/Tutorials/1.Basic/0.BasicScene/0.BasicScene.unity
+    guid: e6ea298340acd41fd8971c8ed14186c5
+  - enabled: 0
+    path: Assets/toio-sdk/Samples/Sample_WebGL/Sample_UI/Sample_UI.unity
+    guid: 076f8717a112b440a9716cdb1a89e1f4
+  - enabled: 0
+    path: Assets/toio-sdk/Tutorials/1.Basic/6.MultiCube/6.MultiCubeScene.unity
+    guid: 88c53d618425e4c5ba8cc3dc0c340e5b
+  - enabled: 0
+    path: Assets/toio-sdk/Tutorials/1.Basic/4.toioID/4.toioID.unity
+    guid: 4126b427bc3aadf4fa75dd13ac1b6d79
+  - enabled: 1
+    path: Assets/Prototypes/SimpleFace/SimpleFace.unity
+    guid: fd96bc9c9f64581459b822071126c742
+  m_configObjects: {}
