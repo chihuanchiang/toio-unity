@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using toio;
+using toio.Navigation;
 using toio.MathUtils;
 using static System.Math;
+using toio.Multimat;
 
 
 // [ExecuteInEditMode]
@@ -25,8 +27,8 @@ public class SimpleGraphScene : MonoBehaviour
 
         Color islandColor = new Color(0, 0, 1, 0.3f);
         graph.V[0].Value = new Island(new Vector(100, 100), islandColor, 40);
-        graph.V[1].Value = new Island(new Vector(400, 100), islandColor, 40);
-        graph.V[2].Value = new Island(new Vector(400, 400), islandColor, 40);
+        graph.V[1].Value = new Island(new Vector(810, 100), islandColor, 40);
+        graph.V[2].Value = new Island(new Vector(810, 400), islandColor, 40);
         graph.V[3].Value = new Island(new Vector(100, 400), islandColor, 40);
         graph.V[4].Value = new Island(new Vector(250, 250), new Color(1, 0, 0, 0.3f), 80);
 
@@ -42,6 +44,23 @@ public class SimpleGraphScene : MonoBehaviour
         // Connect to cubes
         cm = new CubeManager();
         await cm.SingleConnect();
+
+        // Setup multimat
+        cm.handles.Clear();
+        cm.navigators.Clear();
+        foreach (var cube in cm.cubes)
+        {
+            var handle = new HandleMats(cube);
+            cm.handles.Add(handle);
+            var navi = new CubeNavigator(handle);
+            navi.usePred = true;
+            navi.mode = Navigator.Mode.BOIDS_AVOID;
+            cm.navigators.Add(navi);
+
+            handle.borderRect = new RectInt(0, 0, 910, 500);
+            navi.ClearWall();
+            navi.AddBorder(30, x1:0, x2:910, y1:0, y2:500);
+        }
 
         // Assign cube to characters
         p1 = new Character<Island>(cm.navigators[0]);

@@ -12,7 +12,8 @@ public class Island{
         Color = color;
 
         float scale = 0.56f / 410f;
-        Pos3 = new Vector3((float)Pos.x - 250f, 0.0f, 250.0f - (float)Pos.y);
+        float originX = 455f, originY = 250f;
+        Pos3 = new Vector3((float)Pos.x - originX, 0.0f, originY - (float)Pos.y);
         Pos3 *= scale;
         Radius3 = Radius * scale;
     }
