@@ -92,4 +92,9 @@ public class SimpleGraphScene : MonoBehaviour
         }
     }
 
+    public void OnBtn()
+    {
+        Debug.Log("click button");
+    }
+
 }
