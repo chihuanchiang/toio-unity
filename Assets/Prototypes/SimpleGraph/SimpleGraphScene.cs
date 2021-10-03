@@ -111,4 +111,9 @@ public class SimpleGraphScene : MonoBehaviour
         }
     }
 
+    // Users click the button to move toio cube (like roll a dice) 
+    public void RollDice()
+    {
+        Debug.Log("Roll A DICE");
+    }
 }
