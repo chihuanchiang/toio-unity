@@ -17,7 +17,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/toio-sdk/Tutorials/1.Basic/4.toioID/4.toioID.unity
     guid: 4126b427bc3aadf4fa75dd13ac1b6d79
-  - enabled: 1
+  - enabled: 0
     path: Assets/Prototypes/SimpleFace/SimpleFace.unity
     guid: fd96bc9c9f64581459b822071126c742
+  - enabled: 1
+    path: Assets/Prototypes/SimpleGraph/SimpleGraphScene.unity
+    guid: d10cff79a1d18b94d8f67f06fb21b5f7
   m_configObjects: {}
