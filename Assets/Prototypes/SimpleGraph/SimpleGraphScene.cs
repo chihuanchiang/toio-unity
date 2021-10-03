@@ -20,26 +20,8 @@ public class SimpleGraphScene : MonoBehaviour
     {
         // Build graph
         graph = new Graph<Island>();
-
-        for (int i = 0; i < 5; i++) {
-            graph.V.Add(new Vertex<Island>());
-        }
-
-        Color islandColor = new Color(0, 0, 1, 0.3f);
-        graph.V[0].Value = new Island(new Vector(100, 100), islandColor, 40);
-        graph.V[1].Value = new Island(new Vector(810, 100), islandColor, 40);
-        graph.V[2].Value = new Island(new Vector(810, 400), islandColor, 40);
-        graph.V[3].Value = new Island(new Vector(100, 400), islandColor, 40);
-        graph.V[4].Value = new Island(new Vector(250, 250), new Color(1, 0, 0, 0.3f), 80);
-
-        graph.AddEdge(0, 1);
-        graph.AddEdge(1, 2);
-        graph.AddEdge(2, 3);
-        graph.AddEdge(3, 0);
-        graph.AddEdge(0, 4);
-        graph.AddEdge(1, 4);
-        graph.AddEdge(2, 4);
-        graph.AddEdge(3, 4);
+        ReadMap("Assets/Prototypes/SimpleGraph/1.map");
+        graph.V[4].Value.Color = new Color(1, 0, 0, 0.3f); // Set an island to color red
 
         // Connect to cubes
         cm = new CubeManager();
@@ -79,7 +61,7 @@ public class SimpleGraphScene : MonoBehaviour
                 // Move toio Core cube to starting position
                 if (cm.synced) {
                     p1.mv = p1.cubeNav.Navi2Target(p1.spot.Value.Pos.x, p1.spot.Value.Pos.y).Exec();
-                    //if (p1.mv.reached) phase = 1;
+                    if (p1.mv.reached) phase = 1;
                 }
                 break;
             case 1:
@@ -110,6 +92,37 @@ public class SimpleGraphScene : MonoBehaviour
             Gizmos.color = new Color(0,0,0,1.0f);
             Gizmos.DrawLine(e.Src.Value.Pos3, e.Dst.Value.Pos3);
         }
+    }
+
+    // Read the game map from a file
+    public void ReadMap(string file) {
+        Color islandColor = new Color(0, 0, 1, 0.3f);
+        // Parse vertices
+        int N;
+        System.IO.StreamReader f = new System.IO.StreamReader(file);
+        int.TryParse(f.ReadLine(), out N);
+        for (int i = 0; i < N; i++) {
+            string[] line = f.ReadLine().Split(' ');
+            int x, y, r;
+            int.TryParse(line[0], out x);
+            int.TryParse(line[1], out y);
+            int.TryParse(line[2], out r);
+            Debug.Log(string.Format("Add vertex with x:{0} y:{1} r:{2}", x, y, r));
+            
+            graph.V.Add(new Vertex<Island>(new Island(new Vector(x, y), islandColor, r)));
+        }
+
+        // Parse edges
+        int.TryParse(f.ReadLine(), out N);
+        for (int i = 0; i < N; i++) {
+            string[] line = f.ReadLine().Split(' ');
+            int n1, n2;
+            int.TryParse(line[0], out n1);
+            int.TryParse(line[1], out n2);
+            Debug.Log(string.Format("Add edge with n1:{0} n2:{1}", n1, n2));
+            graph.AddEdge(n1, n2);
+        }
+        f.Close();
     }
 
     // Users click the button to move toio cube (like roll a dice) 

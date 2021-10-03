@@ -19,8 +19,9 @@ public class Graph<TVertexType> {
 }
 
 public class Vertex<TVertexType> {
-    public Vertex() {
+    public Vertex(TVertexType value) {
         Adj = new List<Vertex<TVertexType>>();
+        Value = value;
     }
 
     public List<Vertex<TVertexType>> Adj { get; set; }
