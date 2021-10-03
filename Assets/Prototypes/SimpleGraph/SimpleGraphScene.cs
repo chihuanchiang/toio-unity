@@ -8,12 +8,11 @@ using static System.Math;
 using toio.Multimat;
 
 
-// [ExecuteInEditMode]
 public class SimpleGraphScene : MonoBehaviour
 {
     Graph<Island> graph;
     CubeManager cm;
-    Character<Island> p1;
+    List<Player<Island>> player = new List<Player<Island>>();
     bool started = false;
 
     public string MapFile;
@@ -23,11 +22,11 @@ public class SimpleGraphScene : MonoBehaviour
         // Build graph
         graph = new Graph<Island>();
         ReadMap("Assets/Prototypes/SimpleGraph/maps/" + MapFile);
-        graph.V[4].Value.Color = new Color(1, 0, 0, 0.3f); // Set an island to color red
+        graph.V[4].Value.Color = new Color(1, 0, 0, 0.3f);
 
         // Connect to cubes
         cm = new CubeManager();
-        await cm.SingleConnect();
+        await cm.MultiConnect(4);
 
         // Setup multimat
         cm.handles.Clear();
@@ -46,11 +45,19 @@ public class SimpleGraphScene : MonoBehaviour
             navi.AddBorder(30, x1:0, x2:910, y1:0, y2:500);
         }
 
-        // Assign cube to characters
-        p1 = new Character<Island>(cm.navigators[0]);
+        // Assign 2 characters to each player
+        for (int i = 0; i < 2; i++) {
+            var ch1 = new Character<Island>(cm.navigators[2 * i], cm.cubes[2 * i]);
+            var ch2 = new Character<Island>(cm.navigators[2 * i + 1], cm.cubes[2 * i + 1]);
+            player.Add(new Player<Island>(ch1, ch2));
+        }
 
-        // Set the first spot of each character
-        p1.spot = graph.V[0];
+        // Set the initial spot of each player's first character
+        player[0].First.spot = graph.V[0];
+        player[1].First.spot = graph.V[2];
+        // Set the initial spot of each player's second character
+        player[0].Second.spot = graph.V[8];
+        player[1].Second.spot = graph.V[9];
 
         started = true;
     }
@@ -58,22 +65,34 @@ public class SimpleGraphScene : MonoBehaviour
     int phase = 0;
     void Update()
     {
+        if (!started) return;
         switch (phase) {
             case 0:
                 // Move toio Core cube to starting position
                 if (cm.synced) {
-                    p1.mv = p1.cubeNav.Navi2Target(p1.spot.Value.Pos.x, p1.spot.Value.Pos.y).Exec();
-                    if (p1.mv.reached) phase = 1;
+                    bool all_reached = true;
+                    foreach (var p in player) {
+                        p.First.mv = p.First.nav.Navi2Target(p.First.spot.Value.Pos.x, p.First.spot.Value.Pos.y).Exec();
+                        all_reached &= p.First.mv.reached;
+                        p.Second.mv = p.Second.nav.Navi2Target(p.Second.spot.Value.Pos.x, p.Second.spot.Value.Pos.y).Exec();
+                        all_reached &= p.Second.mv.reached;
+                    }
+                    if (all_reached) phase = 1;
                 }
                 break;
             case 1:
                 // Move toio Core cube to a random selected neighbor
                 if (cm.synced) {
-                    if (p1.mv.reached) {
-                        p1.spot = p1.spot.Adj[Random.Range(0, p1.spot.Degree)];
-                        phase = 0;
+                    bool all_reached = true;
+                    foreach (var p in player) {
+                        p.First.mv = p.First.nav.Navi2Target(p.First.spot.Value.Pos.x, p.First.spot.Value.Pos.y).Exec();
+                        all_reached &= p.First.mv.reached;
                     }
-                    p1.mv = p1.cubeNav.Navi2Target(p1.spot.Value.Pos.x, p1.spot.Value.Pos.y).Exec();
+                    if (all_reached) {
+                        foreach (var p in player) {
+                            p.First.spot = p.First.spot.Adj[Random.Range(0, p.First.spot.Degree)];
+                        }
+                    }
                 }
                 break;
             default:
