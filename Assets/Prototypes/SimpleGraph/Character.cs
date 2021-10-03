@@ -4,13 +4,23 @@ using UnityEngine;
 using toio;
 using toio.Navigation;
 
-public class Character<TVertexType>
+public class Character
 {
-    public Character(CubeNavigator nav) {
-        cubeNav = nav;
+    public Character(CubeNavigator nav, Cube cube) {
+        this.nav = nav;
+        this.cube = cube;
     }
 
-    public CubeNavigator cubeNav { get; set; }
-    public Vertex<TVertexType> spot { get; set; }
+    public CubeNavigator nav { get; set; }
+    public Cube cube { get; set; }
+    public Vertex spot { get; set; }
     public Movement mv { get; set; }
+
+    public void Navi2Spot() {
+        mv = nav.Navi2Target(spot.Value.Pos.x, spot.Value.Pos.y).Exec();
+    }
+
+    public void RenewSpot() {
+        spot = spot.Adj[Random.Range(0, spot.Degree)];
+    }
 }

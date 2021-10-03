@@ -8,12 +8,11 @@ using static System.Math;
 using toio.Multimat;
 
 
-// [ExecuteInEditMode]
 public class SimpleGraphScene : MonoBehaviour
 {
-    Graph<Island> graph;
+    Graph graph;
     CubeManager cm;
-    Character<Island> p1;
+    List<Player> player = new List<Player>();
     bool started = false;
 
     public string MapFile;
@@ -21,13 +20,15 @@ public class SimpleGraphScene : MonoBehaviour
     async void Start()
     {
         // Build graph
-        graph = new Graph<Island>();
+        graph = new Graph();
         ReadMap("Assets/Prototypes/SimpleGraph/maps/" + MapFile);
-        graph.V[4].Value.Color = new Color(1, 0, 0, 0.3f); // Set an island to color red
+        graph.V[4].Value.Color = new Color(1, 0, 0, 0.3f);
+        graph.V[8].Value.Color = new Color(0, 0, 0, 0.3f);
+        graph.V[9].Value.Color = new Color(0, 0, 0, 0.3f);
 
         // Connect to cubes
         cm = new CubeManager();
-        await cm.SingleConnect();
+        await cm.MultiConnect(4);
 
         // Setup multimat
         cm.handles.Clear();
@@ -46,34 +47,51 @@ public class SimpleGraphScene : MonoBehaviour
             navi.AddBorder(30, x1:0, x2:910, y1:0, y2:500);
         }
 
-        // Assign cube to characters
-        p1 = new Character<Island>(cm.navigators[0]);
+        // Assign 2 characters to each player
+        for (int i = 0; i < 2; i++) {
+            var ch1 = new Character(cm.navigators[2 * i], cm.cubes[2 * i]);
+            var ch2 = new Character(cm.navigators[2 * i + 1], cm.cubes[2 * i + 1]);
+            player.Add(new Player(ch1, ch2));
+        }
 
-        // Set the first spot of each character
-        p1.spot = graph.V[0];
+        // Set the initial spot of each player's first character
+        player[0].First.spot = graph.V[0];
+        player[1].First.spot = graph.V[2];
+        // Set the initial spot of each player's second character
+        player[0].Second.spot = graph.V[8];
+        player[1].Second.spot = graph.V[9];
 
         started = true;
     }
 
     int phase = 0;
+    int turn = 0;
     void Update()
     {
+        if (!started) return;
         switch (phase) {
             case 0:
-                // Move toio Core cube to starting position
+                // Move characters to their starting spot
                 if (cm.synced) {
-                    p1.mv = p1.cubeNav.Navi2Target(p1.spot.Value.Pos.x, p1.spot.Value.Pos.y).Exec();
-                    if (p1.mv.reached) phase = 1;
+                    bool all_reached = true;
+                    foreach (var p in player) {
+                        p.First.Navi2Spot();
+                        p.Second.Navi2Spot();
+                        all_reached &= p.First.mv.reached && p.Second.mv.reached;
+                    }
+                    if (all_reached) phase = 1;
                 }
                 break;
             case 1:
-                // Move toio Core cube to a random selected neighbor
+                // Players take turns moving to a neighboring spot
                 if (cm.synced) {
-                    if (p1.mv.reached) {
-                        p1.spot = p1.spot.Adj[Random.Range(0, p1.spot.Degree)];
-                        phase = 0;
+                    var p = player[turn];
+                    p.First.Navi2Spot();
+                    if (p.First.mv.reached) {
+                        p.First.RenewSpot();
+                        turn++;
+                        if (turn >= player.Count) turn = 0;
                     }
-                    p1.mv = p1.cubeNav.Navi2Target(p1.spot.Value.Pos.x, p1.spot.Value.Pos.y).Exec();
                 }
                 break;
             default:
@@ -111,7 +129,7 @@ public class SimpleGraphScene : MonoBehaviour
             int.TryParse(line[2], out r);
             Debug.Log(string.Format("Add vertex with x:{0} y:{1} r:{2}", x, y, r));
             
-            graph.V.Add(new Vertex<Island>(new Island(new Vector(x, y), islandColor, r)));
+            graph.V.Add(new Vertex(new Island(new Vector(x, y), islandColor, r)));
         }
 
         // Parse edges
