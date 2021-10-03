@@ -16,11 +16,13 @@ public class SimpleGraphScene : MonoBehaviour
     Character<Island> p1;
     bool started = false;
 
+    public string MapFile;
+
     async void Start()
     {
         // Build graph
         graph = new Graph<Island>();
-        ReadMap("Assets/Prototypes/SimpleGraph/1.map");
+        ReadMap("Assets/Prototypes/SimpleGraph/maps/" + MapFile);
         graph.V[4].Value.Color = new Color(1, 0, 0, 0.3f); // Set an island to color red
 
         // Connect to cubes
