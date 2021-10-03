@@ -79,7 +79,7 @@ public class SimpleGraphScene : MonoBehaviour
                 // Move toio Core cube to starting position
                 if (cm.synced) {
                     p1.mv = p1.cubeNav.Navi2Target(p1.spot.Value.Pos.x, p1.spot.Value.Pos.y).Exec();
-                    if (p1.mv.reached) phase = 1;
+                    //if (p1.mv.reached) phase = 1;
                 }
                 break;
             case 1:
@@ -87,6 +87,7 @@ public class SimpleGraphScene : MonoBehaviour
                 if (cm.synced) {
                     if (p1.mv.reached) {
                         p1.spot = p1.spot.Adj[Random.Range(0, p1.spot.Degree)];
+                        phase = 0;
                     }
                     p1.mv = p1.cubeNav.Navi2Target(p1.spot.Value.Pos.x, p1.spot.Value.Pos.y).Exec();
                 }
@@ -115,5 +116,6 @@ public class SimpleGraphScene : MonoBehaviour
     public void RollDice()
     {
         Debug.Log("Roll A DICE");
+        phase = 1;
     }
 }
