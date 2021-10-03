@@ -65,6 +65,7 @@ public class SimpleGraphScene : MonoBehaviour
     }
 
     int phase = 0;
+    int turn = 0;
     void Update()
     {
         if (!started) return;
@@ -82,18 +83,14 @@ public class SimpleGraphScene : MonoBehaviour
                 }
                 break;
             case 1:
-                // Move each character to one of its neighboring spot
+                // Players take turns moving to a neighboring spot
                 if (cm.synced) {
-                    bool all_reached = true;
-                    foreach (var p in player) {
-                        p.First.Navi2Spot();
-                        all_reached &= p.First.mv.reached;
-                    }
-                    
-                    if (all_reached) {
-                        foreach (var p in player) {
-                            p.First.RenewSpot();
-                        }
+                    var p = player[turn];
+                    p.First.Navi2Spot();
+                    if (p.First.mv.reached) {
+                        p.First.RenewSpot();
+                        turn++;
+                        if (turn >= player.Count) turn = 0;
                     }
                 }
                 break;
