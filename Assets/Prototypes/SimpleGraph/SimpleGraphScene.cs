@@ -10,9 +10,9 @@ using toio.Multimat;
 
 public class SimpleGraphScene : MonoBehaviour
 {
-    Graph<Island> graph;
+    Graph graph;
     CubeManager cm;
-    List<Player<Island>> player = new List<Player<Island>>();
+    List<Player> player = new List<Player>();
     bool started = false;
 
     public string MapFile;
@@ -20,9 +20,11 @@ public class SimpleGraphScene : MonoBehaviour
     async void Start()
     {
         // Build graph
-        graph = new Graph<Island>();
+        graph = new Graph();
         ReadMap("Assets/Prototypes/SimpleGraph/maps/" + MapFile);
         graph.V[4].Value.Color = new Color(1, 0, 0, 0.3f);
+        graph.V[8].Value.Color = new Color(0, 0, 0, 0.3f);
+        graph.V[9].Value.Color = new Color(0, 0, 0, 0.3f);
 
         // Connect to cubes
         cm = new CubeManager();
@@ -47,9 +49,9 @@ public class SimpleGraphScene : MonoBehaviour
 
         // Assign 2 characters to each player
         for (int i = 0; i < 2; i++) {
-            var ch1 = new Character<Island>(cm.navigators[2 * i], cm.cubes[2 * i]);
-            var ch2 = new Character<Island>(cm.navigators[2 * i + 1], cm.cubes[2 * i + 1]);
-            player.Add(new Player<Island>(ch1, ch2));
+            var ch1 = new Character(cm.navigators[2 * i], cm.cubes[2 * i]);
+            var ch2 = new Character(cm.navigators[2 * i + 1], cm.cubes[2 * i + 1]);
+            player.Add(new Player(ch1, ch2));
         }
 
         // Set the initial spot of each player's first character
@@ -68,29 +70,29 @@ public class SimpleGraphScene : MonoBehaviour
         if (!started) return;
         switch (phase) {
             case 0:
-                // Move toio Core cube to starting position
+                // Move characters to their starting spot
                 if (cm.synced) {
                     bool all_reached = true;
                     foreach (var p in player) {
-                        p.First.mv = p.First.nav.Navi2Target(p.First.spot.Value.Pos.x, p.First.spot.Value.Pos.y).Exec();
-                        all_reached &= p.First.mv.reached;
-                        p.Second.mv = p.Second.nav.Navi2Target(p.Second.spot.Value.Pos.x, p.Second.spot.Value.Pos.y).Exec();
-                        all_reached &= p.Second.mv.reached;
+                        p.First.Navi2Spot();
+                        p.Second.Navi2Spot();
+                        all_reached &= p.First.mv.reached && p.Second.mv.reached;
                     }
                     if (all_reached) phase = 1;
                 }
                 break;
             case 1:
-                // Move toio Core cube to a random selected neighbor
+                // Move each character to one of its neighboring spot
                 if (cm.synced) {
                     bool all_reached = true;
                     foreach (var p in player) {
-                        p.First.mv = p.First.nav.Navi2Target(p.First.spot.Value.Pos.x, p.First.spot.Value.Pos.y).Exec();
+                        p.First.Navi2Spot();
                         all_reached &= p.First.mv.reached;
                     }
+                    
                     if (all_reached) {
                         foreach (var p in player) {
-                            p.First.spot = p.First.spot.Adj[Random.Range(0, p.First.spot.Degree)];
+                            p.First.RenewSpot();
                         }
                     }
                 }
@@ -130,7 +132,7 @@ public class SimpleGraphScene : MonoBehaviour
             int.TryParse(line[2], out r);
             Debug.Log(string.Format("Add vertex with x:{0} y:{1} r:{2}", x, y, r));
             
-            graph.V.Add(new Vertex<Island>(new Island(new Vector(x, y), islandColor, r)));
+            graph.V.Add(new Vertex(new Island(new Vector(x, y), islandColor, r)));
         }
 
         // Parse edges
