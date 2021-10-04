@@ -16,6 +16,7 @@ public class SimpleGraphScene : MonoBehaviour
     bool started = false;
 
     public string MapFile;
+    public UI ui;
 
     async void Start()
     {
@@ -66,6 +67,8 @@ public class SimpleGraphScene : MonoBehaviour
 
     int phase = 0;
     int turn = 0;
+    int toio_status = 0; //0: toio stop, 1:toio moves
+    int count = 0;
     void Update()
     {
         if (!started) return;
@@ -79,18 +82,38 @@ public class SimpleGraphScene : MonoBehaviour
                         p.Second.Navi2Spot();
                         all_reached &= p.First.mv.reached && p.Second.mv.reached;
                     }
-                    if (all_reached) phase = 1;
+                    if (all_reached)
+                    {
+                        phase = 1;
+                        ui.OpenBtn();
+                    }
                 }
                 break;
             case 1:
                 // Players take turns moving to a neighboring spot
                 if (cm.synced) {
-                    var p = player[turn];
-                    p.First.Navi2Spot();
-                    if (p.First.mv.reached) {
-                        p.First.RenewSpot();
-                        turn++;
-                        if (turn >= player.Count) turn = 0;
+                    //Debug.Log(toio_status);
+                    //Debug.Log(count);
+                    if(toio_status == 0 && count == 0)
+                    {
+                        Debug.Log("First");
+                        ui.ShowPlayerOrder(turn);
+                        count++;
+                    }
+                    else if(toio_status == 1)
+                    {
+                        Debug.Log("Second");
+                        var p = player[turn];
+                        p.First.Navi2Spot();
+                        if (p.First.mv.reached)
+                        {
+                            Debug.Log("reach");
+                            p.First.RenewSpot();
+                            turn++;
+                            if (turn >= player.Count) turn = 0;
+                            toio_status = 0;
+                            count = 0;
+                        }
                     }
                 }
                 break;
@@ -149,6 +172,7 @@ public class SimpleGraphScene : MonoBehaviour
     public void RollDice()
     {
         Debug.Log("Roll A DICE");
-        phase = 1;
+        toio_status = 1;
     }
+
 }
