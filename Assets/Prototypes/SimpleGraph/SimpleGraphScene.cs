@@ -84,6 +84,9 @@ public class SimpleGraphScene : MonoBehaviour
                     }
                     if (all_reached)
                     {
+                        foreach (var p in player) {
+                            p.First.RenewSpot();
+                        }
                         phase = 1;
                         ui.OpenBtn();
                     }
