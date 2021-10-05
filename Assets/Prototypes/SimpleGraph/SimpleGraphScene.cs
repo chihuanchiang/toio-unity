@@ -22,7 +22,7 @@ public class SimpleGraphScene : MonoBehaviour
     {
         // Build graph
         graph = new Graph();
-        ReadMap("Assets/Prototypes/SimpleGraph/maps/" + MapFile);
+        ReadMap(MapFile);
         graph.V[4].Value.Color = new Color(1, 0, 0, 0.3f);
         graph.V[8].Value.Color = new Color(0, 0, 0, 0.3f);
         graph.V[9].Value.Color = new Color(0, 0, 0, 0.3f);
@@ -142,33 +142,34 @@ public class SimpleGraphScene : MonoBehaviour
 
     // Read the game map from a file
     public void ReadMap(string file) {
-        Color islandColor = new Color(0, 0, 1, 0.3f);
-        // Parse vertices
+        var f = Resources.Load<TextAsset>(file);
+        string[] lines = f.text.Split('\n');
+        int ln = 0;
         int N;
-        System.IO.StreamReader f = new System.IO.StreamReader(file);
-        int.TryParse(f.ReadLine(), out N);
+        
+        // Parse vertices
+        int.TryParse(lines[ln++], out N);
+        Color islandColor = new Color(0, 0, 1, 0.3f);
         for (int i = 0; i < N; i++) {
-            string[] line = f.ReadLine().Split(' ');
+            string[] line = lines[ln++].Split(' ');
             int x, y, r;
             int.TryParse(line[0], out x);
             int.TryParse(line[1], out y);
             int.TryParse(line[2], out r);
-            Debug.Log(string.Format("Add vertex with x:{0} y:{1} r:{2}", x, y, r));
-            
             graph.V.Add(new Vertex(new Island(new Vector(x, y), islandColor, r)));
+            Debug.Log(string.Format("Add vertex with x:{0} y:{1} r:{2}", x, y, r));
         }
 
         // Parse edges
-        int.TryParse(f.ReadLine(), out N);
+        int.TryParse(lines[ln++], out N);
         for (int i = 0; i < N; i++) {
-            string[] line = f.ReadLine().Split(' ');
+            string[] line = lines[ln++].Split(' ');
             int n1, n2;
             int.TryParse(line[0], out n1);
             int.TryParse(line[1], out n2);
             Debug.Log(string.Format("Add edge with n1:{0} n2:{1}", n1, n2));
             graph.AddEdge(n1, n2);
         }
-        f.Close();
     }
 
     // Users click the button to move toio cube (like roll a dice) 

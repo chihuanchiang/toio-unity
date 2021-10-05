@@ -899,7 +899,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e48e164a1269dcd4d94fcd615a1f29b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapFile: 2.map
+  MapFile: map2
   ui: {fileID: 1641688435}
 --- !u!4 &1641688434
 Transform:
