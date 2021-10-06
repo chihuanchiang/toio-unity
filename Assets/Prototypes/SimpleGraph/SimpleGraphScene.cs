@@ -45,13 +45,15 @@ public class SimpleGraphScene : MonoBehaviour
             navi.usePred = true;
             navi.mode = Navigator.Mode.BOIDS_AVOID;
             cm.navigators.Add(navi);
-#if (UNITY_EDITOR || UNITY_STANDALONE)
-        handle.borderRect = new RectInt(0, 0, 910, 500);
-#elif (UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL)
-        handle.borderRect = new RectInt(58, 102, 688, 512);
-#endif
+
             navi.ClearWall();
+#if (UNITY_EDITOR || UNITY_STANDALONE)
+            handle.borderRect = new RectInt(0, 0, 910, 500);
             navi.AddBorder(30, x1:0, x2:910, y1:0, y2:500);
+#elif (UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL)
+            handle.borderRect = new RectInt(58, 102, 688, 512);
+            navi.AddBorder(30, x1:58, x2:746, y1:102, y2:614);
+#endif
         }
 
         // Assign 2 characters to each player
