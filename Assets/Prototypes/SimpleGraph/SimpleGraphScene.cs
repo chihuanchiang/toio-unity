@@ -15,14 +15,17 @@ public class SimpleGraphScene : MonoBehaviour
     List<Player> player = new List<Player>();
     bool started = false;
 
-    public string MapFile;
     public UI ui;
 
     async void Start()
     {
         // Build graph
         graph = new Graph();
-        ReadMap(MapFile);
+#if (UNITY_EDITOR || UNITY_STANDALONE)
+        ReadMap("map2");
+#elif (UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL)
+        ReadMap("map2_devmat");
+#endif
         graph.V[4].Value.Color = new Color(1, 0, 0, 0.3f);
         graph.V[8].Value.Color = new Color(0, 0, 0, 0.3f);
         graph.V[9].Value.Color = new Color(0, 0, 0, 0.3f);
@@ -42,8 +45,11 @@ public class SimpleGraphScene : MonoBehaviour
             navi.usePred = true;
             navi.mode = Navigator.Mode.BOIDS_AVOID;
             cm.navigators.Add(navi);
-
-            handle.borderRect = new RectInt(0, 0, 910, 500);
+#if (UNITY_EDITOR || UNITY_STANDALONE)
+        handle.borderRect = new RectInt(0, 0, 910, 500);
+#elif (UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL)
+        handle.borderRect = new RectInt(58, 102, 688, 512);
+#endif
             navi.ClearWall();
             navi.AddBorder(30, x1:0, x2:910, y1:0, y2:500);
         }

@@ -14,6 +14,13 @@ namespace toio.Multimat
         public int matY = 0;
         protected float lastX=250;
         protected float lastY=250;
+        protected float margin = 50;
+#if (UNITY_EDITOR || UNITY_STANDALONE)
+        protected float leftX = 45, rightX = 455, topY = 45, bottomY = 455;
+#elif (UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL)
+        protected float leftX = 98, rightX = 402, topY = 142, bottomY = 358;
+#endif
+
         public override void Update()
         {
             var frm = Time.frameCount;
@@ -24,14 +31,14 @@ namespace toio.Multimat
             var rawY = cube.y;
 
             // update matX, matY
-            if (lastX > 455 - 50 && rawX < 45 + 50)
+            if (lastX > rightX - margin && rawX < leftX + margin)
                 matX += 1;
-            else if (rawX > 455 - 50 && lastX < 45 + 50)
+            else if (rawX > rightX - margin && lastX < leftX + margin)
                 matX -= 1;
 
-            if (lastY > 455 - 50 && rawY < 45 + 50)
+            if (lastY > bottomY - margin && rawY < topY + margin)
                 matY += 1;
-            else if (rawY > 455 - 50 && lastY < 45 + 50)
+            else if (rawY > bottomY - margin && lastY < topY + margin)
                 matY -= 1;
 
             if (matX < 0) matX = 0;
@@ -40,8 +47,8 @@ namespace toio.Multimat
             lastX = rawX; lastY = rawY;
 
             // update x, y
-            x = rawX + matX*411;
-            y = rawY + matY*411;
+            x = rawX + matX * (rightX - leftX);
+            y = rawY + matY * (bottomY - topY);
             deg = Deg(cube.angle);
             UpdateProperty();
 
