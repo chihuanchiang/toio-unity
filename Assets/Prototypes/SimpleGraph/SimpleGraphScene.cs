@@ -42,8 +42,9 @@ public class SimpleGraphScene : MonoBehaviour
             var handle = new HandleMats(cube);
             cm.handles.Add(handle);
             var navi = new CubeNavigator(handle);
-            navi.usePred = true;
-            navi.mode = Navigator.Mode.BOIDS_AVOID;
+            // navi.usePred = true;
+            // navi.mode = Navigator.Mode.BOIDS_AVOID;
+            navi.ClearOther();
             cm.navigators.Add(navi);
 
             navi.ClearWall();
@@ -64,19 +65,19 @@ public class SimpleGraphScene : MonoBehaviour
         }
 
         // Set the initial spot of each player's first character
-        player[0].First.spot = graph.V[0];
-        player[1].First.spot = graph.V[2];
+        player[0].First.next = graph.V[0];
+        player[1].First.next = graph.V[2];
         // Set the initial spot of each player's second character
-        player[0].Second.spot = graph.V[8];
-        player[1].Second.spot = graph.V[9];
+        player[0].Second.next = graph.V[8];
+        player[1].Second.next = graph.V[9];
 
         started = true;
     }
 
     int phase = 0;
     int turn = 0;
-    int toio_status = 0; //0: toio stop, 1:toio moves
-    int count = 0;
+    int toio_status = 0; //0: toio stop (wait for ui input), 1:toio moves (wait for cubes to reach their spots)
+    bool flag_ui = false;
     void Update()
     {
         if (!started) return;
@@ -86,14 +87,14 @@ public class SimpleGraphScene : MonoBehaviour
                 if (cm.synced) {
                     bool all_reached = true;
                     foreach (var p in player) {
-                        p.First.Navi2Spot();
-                        p.Second.Navi2Spot();
+                        p.First.Navi2Next();
+                        p.Second.Navi2Next();
                         all_reached &= p.First.mv.reached && p.Second.mv.reached;
                     }
                     if (all_reached)
                     {
                         foreach (var p in player) {
-                            p.First.RenewSpot();
+                            p.First.RenewNext();
                         }
                         phase = 1;
                         ui.OpenBtn();
@@ -104,28 +105,53 @@ public class SimpleGraphScene : MonoBehaviour
                 // Players take turns moving to a neighboring spot
                 if (cm.synced) {
                     //Debug.Log(toio_status);
-                    //Debug.Log(count);
-                    if(toio_status == 0 && count == 0)
+                    if(toio_status == 0 && !flag_ui)
                     {
-                        Debug.Log("First");
+                        // Debug.Log("Waiting for ui input");
+                        toio_status = 1; // for testing
                         ui.ShowPlayerOrder(turn);
-                        count++;
+                        flag_ui = true;
                     }
                     else if(toio_status == 1)
                     {
-                        Debug.Log("Second");
+                        // Debug.Log("Waiting for cubes to reach their spots");
                         var p = player[turn];
-                        p.First.Navi2Spot();
+                        p.First.Navi2Next();
                         if (p.First.mv.reached)
                         {
                             Debug.Log("reach");
-                            p.First.RenewSpot();
+                            if (player[0].First.curr == player[1].First.curr) {
+                                phase = 2;
+                            }
+                            p.First.RenewNext();
                             turn++;
                             if (turn >= player.Count) turn = 0;
                             toio_status = 0;
-                            count = 0;
+                            flag_ui = false;
                         }
                     }
+                }
+                break;
+            case 2:
+                // Battle: move characters to the battle field
+                if (cm.synced) {
+                    float oX = player[0].First.next.Value.originX, oY = player[0].First.next.Value.originY;
+                    Movement mv1 = player[0].First.nav.Navi2Target(oX - 50, oY).Exec();
+                    Movement mv2 = player[1].First.nav.Navi2Target(oX + 50, oY).Exec();
+                    if (mv1.reached && mv2.reached) {
+                        player[0].First.next = graph.V[0];
+                        player[1].First.next = graph.V[2];
+                        phase = 3;
+                    }
+                }
+                break;
+            case 3:
+                // Battle
+                if (cm.synced) {
+                    foreach (var p in player) {
+                        p.First.cube.PlayPresetSound(0);
+                    }
+                    phase = 0;
                 }
                 break;
             default:

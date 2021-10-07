@@ -13,14 +13,16 @@ public class Character
 
     public CubeNavigator nav { get; set; }
     public Cube cube { get; set; }
-    public Vertex spot { get; set; }
+    public Vertex next { get; set; }
+    public Vertex curr { get; set; }
     public Movement mv { get; set; }
 
-    public void Navi2Spot() {
-        mv = nav.Navi2Target(spot.Value.Pos.x, spot.Value.Pos.y).Exec();
+    public void Navi2Next() {
+        mv = nav.Navi2Target(next.Value.Pos.x, next.Value.Pos.y, tolerance:120).Exec();
+        curr = next;
     }
 
-    public void RenewSpot() {
-        spot = spot.Adj[Random.Range(0, spot.Degree)];
+    public void RenewNext() {
+        next = next.Adj[Random.Range(0, next.Degree)];
     }
 }
