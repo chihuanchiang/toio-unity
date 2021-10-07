@@ -26,9 +26,13 @@ public class SimpleGraphScene : MonoBehaviour
 #elif (UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL)
         ReadMap("map2_devmat");
 #endif
-        graph.V[4].Value.Color = new Color(1, 0, 0, 0.3f);
-        graph.V[8].Value.Color = new Color(0, 0, 0, 0.3f);
-        graph.V[9].Value.Color = new Color(0, 0, 0, 0.3f);
+        // Set special island types
+        graph.V[1].Value.SetType(Island.Type.PowerUpAtk);
+        graph.V[4].Value.SetType(Island.Type.Prison);
+        graph.V[6].Value.SetType(Island.Type.PowerUpDex);
+        graph.V[7].Value.SetType(Island.Type.PowerUpHp);
+        graph.V[8].Value.SetType(Island.Type.Dummy);
+        graph.V[9].Value.SetType(Island.Type.Dummy);
 
         // Connect to cubes
         cm = new CubeManager();
@@ -120,6 +124,7 @@ public class SimpleGraphScene : MonoBehaviour
                         if (p.First.mv.reached)
                         {
                             Debug.Log("reach");
+                            p.IslandAction();
                             if (player[0].First.curr == player[1].First.curr) {
                                 phase = 2;
                             }
@@ -135,9 +140,8 @@ public class SimpleGraphScene : MonoBehaviour
             case 2:
                 // Battle: move characters to the battle field
                 if (cm.synced) {
-                    float oX = player[0].First.next.Value.originX, oY = player[0].First.next.Value.originY;
-                    Movement mv1 = player[0].First.nav.Navi2Target(oX - 50, oY).Exec();
-                    Movement mv2 = player[1].First.nav.Navi2Target(oX + 50, oY).Exec();
+                    Movement mv1 = player[0].First.nav.Navi2Target(Island.originX - 50, Island.originY).Exec();
+                    Movement mv2 = player[1].First.nav.Navi2Target(Island.originX + 50, Island.originY).Exec();
                     if (mv1.reached && mv2.reached) {
                         player[0].First.next = graph.V[0];
                         player[1].First.next = graph.V[2];
@@ -183,14 +187,13 @@ public class SimpleGraphScene : MonoBehaviour
         
         // Parse vertices
         int.TryParse(lines[ln++], out N);
-        Color islandColor = new Color(0, 0, 1, 0.3f);
         for (int i = 0; i < N; i++) {
             string[] line = lines[ln++].Split(' ');
             int x, y, r;
             int.TryParse(line[0], out x);
             int.TryParse(line[1], out y);
             int.TryParse(line[2], out r);
-            graph.V.Add(new Vertex(new Island(new Vector(x, y), islandColor, r)));
+            graph.V.Add(new Vertex(new Island(new Vector(x, y), r)));
             Debug.Log(string.Format("Add vertex with x:{0} y:{1} r:{2}", x, y, r));
         }
 
