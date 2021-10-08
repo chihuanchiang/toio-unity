@@ -19,8 +19,8 @@ public class Character
     public Vertex curr { get; set; }
     public Movement mv { get; set; }
 
-    public void Navi2Next() {
-        mv = nav.Navi2Target(next.Value.Pos.x, next.Value.Pos.y, tolerance:120).Exec();
+    public void Move2Next() {
+        mv = handle.Move2Target(next.Value.Pos.x, next.Value.Pos.y, tolerance:40).Exec();
         curr = next;
     }
 

@@ -95,8 +95,8 @@ public class SimpleGraphScene : MonoBehaviour
                 if (cm.synced) {
                     bool all_reached = true;
                     foreach (var p in player) {
-                        p.First.Navi2Next();
-                        p.Second.Navi2Next();
+                        p.First.Move2Next();
+                        p.Second.Move2Next();
                         all_reached &= p.First.mv.reached && p.Second.mv.reached;
                     }
                     if (all_reached)
@@ -124,7 +124,7 @@ public class SimpleGraphScene : MonoBehaviour
                     {
                         // Debug.Log("Waiting for cubes to reach their spots");
                         var p = player[turn];
-                        p.First.Navi2Next();
+                        p.First.Move2Next();
                         if (p.First.mv.reached)
                         {
                             Debug.Log("reach");
