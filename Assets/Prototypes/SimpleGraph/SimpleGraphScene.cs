@@ -116,7 +116,7 @@ public class SimpleGraphScene : MonoBehaviour
                     if(toio_status == 0 && !flag_ui)
                     {
                         // Debug.Log("Waiting for ui input");
-                        toio_status = 1; // Bypass ui input for testing
+                        // toio_status = 1; // Bypass ui input for testing
                         ui.ShowPlayerOrder(turn);
                         flag_ui = true;
                     }
