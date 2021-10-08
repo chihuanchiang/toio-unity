@@ -6,12 +6,14 @@ using toio.Navigation;
 
 public class Character
 {
-    public Character(CubeNavigator nav, Cube cube) {
+    public Character(CubeNavigator nav, CubeHandle handle, Cube cube) {
         this.nav = nav;
+        this.handle = handle;
         this.cube = cube;
     }
 
     public CubeNavigator nav { get; set; }
+    public CubeHandle handle { get; set; }
     public Cube cube { get; set; }
     public Vertex next { get; set; }
     public Vertex curr { get; set; }

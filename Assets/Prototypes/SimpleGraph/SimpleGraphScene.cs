@@ -13,6 +13,7 @@ public class SimpleGraphScene : MonoBehaviour
     Graph graph;
     CubeManager cm;
     List<Player> player = new List<Player>();
+    Battle battle;
     bool started = false;
 
     public UI ui;
@@ -63,10 +64,13 @@ public class SimpleGraphScene : MonoBehaviour
 
         // Assign 2 characters to each player
         for (int i = 0; i < 2; i++) {
-            var ch1 = new Character(cm.navigators[2 * i], cm.cubes[2 * i]);
-            var ch2 = new Character(cm.navigators[2 * i + 1], cm.cubes[2 * i + 1]);
+            var ch1 = new Character(cm.navigators[2 * i], cm.handles[2 * i], cm.cubes[2 * i]);
+            var ch2 = new Character(cm.navigators[2 * i + 1], cm.handles[2 * i + 1], cm.cubes[2 * i + 1]);
             player.Add(new Player(ch1, ch2));
         }
+
+        // Set up battle
+        battle = new Battle(player[0], player[1]);
 
         // Set the initial spot of each player's first character
         player[0].First.next = graph.V[0];
@@ -112,7 +116,7 @@ public class SimpleGraphScene : MonoBehaviour
                     if(toio_status == 0 && !flag_ui)
                     {
                         // Debug.Log("Waiting for ui input");
-                        toio_status = 1; // for testing
+                        toio_status = 1; // Bypass ui input for testing
                         ui.ShowPlayerOrder(turn);
                         flag_ui = true;
                     }
@@ -151,9 +155,9 @@ public class SimpleGraphScene : MonoBehaviour
                 break;
             case 3:
                 // Battle
-                if (cm.synced) {
+                if (!battle.Play()) {
                     foreach (var p in player) {
-                        p.First.cube.PlayPresetSound(0);
+                        p.ResetStat();
                     }
                     phase = 0;
                 }
@@ -215,5 +219,33 @@ public class SimpleGraphScene : MonoBehaviour
         Debug.Log("Roll A DICE");
         toio_status = 1;
     }
+
+    // public bool Battle() {
+    //     static int phase = 0;
+    //     switch (phase) {
+    //         case 0:
+    //             if (cm.synced) {
+    //                 Movement mv1 = player[0].First.handle.Rotate2Target(player[1].First.cube.x, player[1].First.cube.y).Exec();
+    //                 Movement mv2 = player[1].First.handle.Rotate2Target(player[0].First.cube.x, player[0].First.cube.y).Exec();
+    //                 if (mv1.reached && mv2.reached) phase = 1;
+    //             }
+    //             break;
+    //         case 1:
+    //             if (cm.synced) {
+    //                 Movement mv = player[0].First.handle.Move2Target(player[1].First.cube.x - 20, player[1].First.cube.y).Exec();
+    //                 if (mv.reached) phase = 2;
+    //             }
+    //             break;
+    //         case 2:
+    //             if (cm.synced) {
+    //                 Movement mv = player[1].First.handle.Move2Target(player[0].First.cube.x + 20, player[0].First.cube.y).Exec();
+    //                 if (mv.reached) phase = 0;
+    //             }
+    //         default:
+    //             Debug.LogError("Invalid battle phase");
+    //             break;
+    //     }
+    //     return true; // testing: always return true. return false to end the battle
+    // }
 
 }
