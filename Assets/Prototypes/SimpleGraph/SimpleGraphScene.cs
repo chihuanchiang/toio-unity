@@ -47,8 +47,8 @@ public class SimpleGraphScene : MonoBehaviour
             var handle = new HandleMats(cube);
             cm.handles.Add(handle);
             var navi = new CubeNavigator(handle);
-            // navi.usePred = true;
-            // navi.mode = Navigator.Mode.BOIDS_AVOID;
+            navi.usePred = true;
+            navi.mode = Navigator.Mode.BOIDS_AVOID;
             navi.ClearOther();
             cm.navigators.Add(navi);
 
@@ -124,7 +124,7 @@ public class SimpleGraphScene : MonoBehaviour
                     {
                         // Debug.Log("Waiting for cubes to reach their spots");
                         var p = player[turn];
-                        p.First.Move2Next();
+                        p.First.Move2Next(player[0].First.curr == player[1].First.curr);
                         if (p.First.mv.reached)
                         {
                             Debug.Log("reach");
@@ -219,33 +219,4 @@ public class SimpleGraphScene : MonoBehaviour
         Debug.Log("Roll A DICE");
         toio_status = 1;
     }
-
-    // public bool Battle() {
-    //     static int phase = 0;
-    //     switch (phase) {
-    //         case 0:
-    //             if (cm.synced) {
-    //                 Movement mv1 = player[0].First.handle.Rotate2Target(player[1].First.cube.x, player[1].First.cube.y).Exec();
-    //                 Movement mv2 = player[1].First.handle.Rotate2Target(player[0].First.cube.x, player[0].First.cube.y).Exec();
-    //                 if (mv1.reached && mv2.reached) phase = 1;
-    //             }
-    //             break;
-    //         case 1:
-    //             if (cm.synced) {
-    //                 Movement mv = player[0].First.handle.Move2Target(player[1].First.cube.x - 20, player[1].First.cube.y).Exec();
-    //                 if (mv.reached) phase = 2;
-    //             }
-    //             break;
-    //         case 2:
-    //             if (cm.synced) {
-    //                 Movement mv = player[1].First.handle.Move2Target(player[0].First.cube.x + 20, player[0].First.cube.y).Exec();
-    //                 if (mv.reached) phase = 0;
-    //             }
-    //         default:
-    //             Debug.LogError("Invalid battle phase");
-    //             break;
-    //     }
-    //     return true; // testing: always return true. return false to end the battle
-    // }
-
 }

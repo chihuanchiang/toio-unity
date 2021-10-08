@@ -27,7 +27,7 @@ public class Battle {
                 if (mv1.reached && mv2.reached) phase = 1;
                 break;
             case 1:
-                mv = P1.First.handle.Move2Target(P2.First.handle.x, P2.First.handle.y, tolerance:30).Exec();
+                mv = P1.First.handle.Move2Target(P2.First.handle.x, P2.First.handle.y, tolerance:40).Exec();
                 if (mv.reached) phase = 2;
                 break;
             case 2:
@@ -35,7 +35,7 @@ public class Battle {
                 if (mv.reached) phase = 3;
                 break;
             case 3:
-                mv = P2.First.handle.Move2Target(P1.First.handle.x, P1.First.handle.y, tolerance:30).Exec();
+                mv = P2.First.handle.Move2Target(P1.First.handle.x, P1.First.handle.y, tolerance:40).Exec();
                 if (mv.reached) phase = 4;
                 break;
             case 4:

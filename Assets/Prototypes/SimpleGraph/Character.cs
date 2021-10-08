@@ -19,9 +19,12 @@ public class Character
     public Vertex curr { get; set; }
     public Movement mv { get; set; }
 
-    public void Move2Next() {
-        mv = handle.Move2Target(next.Value.Pos.x, next.Value.Pos.y, tolerance:40).Exec();
+    public void Move2Next(bool occupied=false) {
         curr = next;
+        if (occupied)
+            mv = handle.Move2Target(next.Value.Pos.x, next.Value.Pos.y, tolerance:80).Exec();
+        else
+            mv = handle.Move2Target(next.Value.Pos.x, next.Value.Pos.y).Exec();
     }
 
     public void RenewNext() {
