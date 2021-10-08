@@ -63,8 +63,8 @@ public class SimpleGraphScene : MonoBehaviour
 
         // Assign 2 characters to each player
         for (int i = 0; i < 2; i++) {
-            var ch1 = new Character(cm.navigators[2 * i], cm.cubes[2 * i]);
-            var ch2 = new Character(cm.navigators[2 * i + 1], cm.cubes[2 * i + 1]);
+            var ch1 = new Character(cm.navigators[2 * i], cm.handles[2 * i], cm.cubes[2 * i]);
+            var ch2 = new Character(cm.navigators[2 * i + 1], cm.handles[2 * i + 1], cm.cubes[2 * i + 1]);
             player.Add(new Player(ch1, ch2));
         }
 
@@ -91,8 +91,8 @@ public class SimpleGraphScene : MonoBehaviour
                 if (cm.synced) {
                     bool all_reached = true;
                     foreach (var p in player) {
-                        p.First.Navi2Next();
-                        p.Second.Navi2Next();
+                        p.First.Move2Next();
+                        p.Second.Move2Next();
                         all_reached &= p.First.mv.reached && p.Second.mv.reached;
                     }
                     if (all_reached)
@@ -120,7 +120,7 @@ public class SimpleGraphScene : MonoBehaviour
                     {
                         // Debug.Log("Waiting for cubes to reach their spots");
                         var p = player[turn];
-                        p.First.Navi2Next();
+                        p.First.Move2Next();
                         if (p.First.mv.reached)
                         {
                             Debug.Log("reach");
