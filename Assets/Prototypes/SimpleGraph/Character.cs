@@ -6,21 +6,28 @@ using toio.Navigation;
 
 public class Character
 {
-    public Character(CubeNavigator nav, Cube cube) {
+    public Character(CubeNavigator nav, CubeHandle handle, Cube cube) {
         this.nav = nav;
+        this.handle = handle;
         this.cube = cube;
     }
 
     public CubeNavigator nav { get; set; }
+    public CubeHandle handle { get; set; }
     public Cube cube { get; set; }
-    public Vertex spot { get; set; }
+    public Vertex next { get; set; }
+    public Vertex curr { get; set; }
     public Movement mv { get; set; }
 
-    public void Navi2Spot() {
-        mv = nav.Navi2Target(spot.Value.Pos.x, spot.Value.Pos.y).Exec();
+    public void Move2Next(bool occupied=false) {
+        curr = next;
+        if (occupied)
+            mv = handle.Move2Target(next.Value.Pos.x, next.Value.Pos.y, tolerance:80).Exec();
+        else
+            mv = handle.Move2Target(next.Value.Pos.x, next.Value.Pos.y).Exec();
     }
 
-    public void RenewSpot() {
-        spot = spot.Adj[Random.Range(0, spot.Degree)];
+    public void RenewNext() {
+        next = next.Adj[Random.Range(0, next.Degree)];
     }
 }
