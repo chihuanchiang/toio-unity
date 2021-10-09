@@ -116,7 +116,7 @@ public class SimpleGraphScene : MonoBehaviour
                     if(toio_status == 0 && !flag_ui)
                     {
                         // Debug.Log("Waiting for ui input");
-                        // toio_status = 1; // Bypass ui input for testing
+                        toio_status = 1; // Bypass ui input for testing
                         ui.ShowPlayerOrder(turn);
                         flag_ui = true;
                     }
@@ -142,24 +142,15 @@ public class SimpleGraphScene : MonoBehaviour
                 }
                 break;
             case 2:
-                // Battle: move characters to the battle field
+                // Battle
                 if (cm.synced) {
-                    Movement mv1 = player[0].First.nav.Navi2Target(Island.originX - 50, Island.originY).Exec();
-                    Movement mv2 = player[1].First.nav.Navi2Target(Island.originX + 50, Island.originY).Exec();
-                    if (mv1.reached && mv2.reached) {
+                    if (!battle.Play()) {
                         player[0].First.next = graph.V[0];
                         player[1].First.next = graph.V[2];
-                        phase = 3;
+                        player[0].ResetStat();
+                        player[1].ResetStat();
+                        phase = 0;
                     }
-                }
-                break;
-            case 3:
-                // Battle
-                if (!battle.Play()) {
-                    foreach (var p in player) {
-                        p.ResetStat();
-                    }
-                    phase = 0;
                 }
                 break;
             default:
