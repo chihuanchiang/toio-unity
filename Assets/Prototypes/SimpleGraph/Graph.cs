@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Graph {
+    public List<Vertex> V;
+    public List<Edge> E;
+
     public Graph() {
         V = new List<Vertex>();
         E = new List<Edge>();
     }
-
-    public List<Vertex> V { get; set; }
-    public List<Edge> E { get; set; }
 
     public void AddEdge(int n1, int n2) {
         V[n1].Adj.Add(V[n2]);
@@ -19,22 +19,22 @@ public class Graph {
 }
 
 public class Vertex {
+    public List<Vertex> Adj;
+    public int Degree { get { return Adj.Count; } }
+    public Island Value;
+
     public Vertex(Island value) {
         Adj = new List<Vertex>();
         Value = value;
     }
-
-    public List<Vertex> Adj { get; set; }
-    public int Degree { get { return Adj.Count; } }
-    public Island Value { get; set; }
 }
 
 public class Edge {
+    public Vertex Src;
+    public Vertex Dst;
+
     public Edge(Vertex src, Vertex dst) {
         Src = src;
         Dst = dst;
     }
-
-    public Vertex Src { get; set; }
-    public Vertex Dst { get; set; }
 }

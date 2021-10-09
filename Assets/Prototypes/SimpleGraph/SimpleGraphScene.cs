@@ -10,164 +10,162 @@ using toio.Multimat;
 
 public class SimpleGraphScene : MonoBehaviour
 {
-    Graph graph;
-    CubeManager cm;
-    List<Player> player = new List<Player>();
-    Battle battle;
-    bool started = false;
-
     public UI ui;
+    
+    private Graph _graph;
+    private CubeManager _cm;
+    private List<Player> _player = new List<Player>();
+    private Battle _battle;
+    private bool _started = false;
+    private int _phase = 0;
+    private int _turn = 0;
+    private int _inputStatus = 0; //0: toio stop (wait for ui input), 1:toio moves (wait for cubes to reach their spots)
+    private bool _flagUi = false;
 
     async void Start()
     {
         // Build graph
-        graph = new Graph();
+        _graph = new Graph();
 #if (UNITY_EDITOR || UNITY_STANDALONE)
         ReadMap("map2");
 #elif (UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL)
         ReadMap("map2_devmat");
 #endif
         // Set special island types
-        graph.V[1].Value.SetType(Island.Type.PowerUpAtk);
-        graph.V[4].Value.SetType(Island.Type.Prison);
-        graph.V[6].Value.SetType(Island.Type.PowerUpDex);
-        graph.V[7].Value.SetType(Island.Type.PowerUpHp);
-        graph.V[8].Value.SetType(Island.Type.Dummy);
-        graph.V[9].Value.SetType(Island.Type.Dummy);
+        _graph.V[1].Value.SetType(Island.Types.PowerUpAtk);
+        _graph.V[4].Value.SetType(Island.Types.Prison);
+        _graph.V[6].Value.SetType(Island.Types.PowerUpDex);
+        _graph.V[7].Value.SetType(Island.Types.PowerUpHp);
+        _graph.V[8].Value.SetType(Island.Types.Dummy);
+        _graph.V[9].Value.SetType(Island.Types.Dummy);
 
         // Connect to cubes
-        cm = new CubeManager();
-        await cm.MultiConnect(4);
+        _cm = new CubeManager();
+        await _cm.MultiConnect(4);
 
         // Setup multimat
-        cm.handles.Clear();
-        cm.navigators.Clear();
-        foreach (var cube in cm.cubes)
+        _cm.handles.Clear();
+        _cm.navigators.Clear();
+        foreach (var cube in _cm.cubes)
         {
             var handle = new HandleMats(cube);
-            cm.handles.Add(handle);
-            var navi = new CubeNavigator(handle);
-            navi.usePred = true;
-            navi.mode = Navigator.Mode.BOIDS_AVOID;
-            navi.ClearOther();
-            cm.navigators.Add(navi);
+            _cm.handles.Add(handle);
+            var navigator = new CubeNavigator(handle);
+            navigator.usePred = true;
+            navigator.mode = Navigator.Mode.BOIDS_AVOID;
+            navigator.ClearOther();
+            _cm.navigators.Add(navigator);
 
-            navi.ClearWall();
+            navigator.ClearWall();
 #if (UNITY_EDITOR || UNITY_STANDALONE)
             handle.borderRect = new RectInt(0, 0, 910, 500);
-            navi.AddBorder(30, x1:0, x2:910, y1:0, y2:500);
+            navigator.AddBorder(30, x1:0, x2:910, y1:0, y2:500);
 #elif (UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL)
             handle.borderRect = new RectInt(58, 102, 688, 512);
-            navi.AddBorder(30, x1:58, x2:746, y1:102, y2:614);
+            navigator.AddBorder(30, x1:58, x2:746, y1:102, y2:614);
 #endif
         }
 
         // Assign 2 characters to each player
         for (int i = 0; i < 2; i++) {
-            var ch1 = new Character(cm.navigators[2 * i], cm.handles[2 * i], cm.cubes[2 * i]);
-            var ch2 = new Character(cm.navigators[2 * i + 1], cm.handles[2 * i + 1], cm.cubes[2 * i + 1]);
-            player.Add(new Player(ch1, ch2));
+            var ch1 = new Character(_cm.navigators[2 * i], _cm.handles[2 * i], _cm.cubes[2 * i]);
+            var ch2 = new Character(_cm.navigators[2 * i + 1], _cm.handles[2 * i + 1], _cm.cubes[2 * i + 1]);
+            _player.Add(new Player(ch1, ch2));
         }
 
         // Set up battle
-        battle = new Battle(player[0], player[1]);
+        _battle = new Battle(_player[0], _player[1]);
 
         // Set the initial spot of each player's first character
-        player[0].First.next = graph.V[0];
-        player[1].First.next = graph.V[2];
+        _player[0].First.Next = _graph.V[0];
+        _player[1].First.Next = _graph.V[2];
         // Set the initial spot of each player's second character
-        player[0].Second.next = graph.V[8];
-        player[1].Second.next = graph.V[9];
+        _player[0].Second.Next = _graph.V[8];
+        _player[1].Second.Next = _graph.V[9];
 
-        started = true;
+        _started = true;
     }
 
-    int phase = 0;
-    int turn = 0;
-    int toio_status = 0; //0: toio stop (wait for ui input), 1:toio moves (wait for cubes to reach their spots)
-    bool flag_ui = false;
     void Update()
     {
-        if (!started) return;
-        switch (phase) {
+        if (!_started) return;
+        switch (_phase) {
             case 0:
                 // Move characters to their starting spot
-                if (cm.synced) {
-                    bool all_reached = true;
-                    foreach (var p in player) {
+                if (_cm.synced) {
+                    bool allReached = true;
+                    foreach (var p in _player) {
                         p.First.Move2Next();
                         p.Second.Move2Next();
-                        all_reached &= p.First.mv.reached && p.Second.mv.reached;
+                        allReached &= p.First.mv.reached && p.Second.mv.reached;
                     }
-                    if (all_reached)
-                    {
-                        foreach (var p in player) {
+                    if (allReached) {
+                        foreach (var p in _player) {
                             p.First.RenewNext();
                         }
-                        phase = 1;
+                        _phase = 1;
                         ui.OpenBtn();
                     }
                 }
                 break;
             case 1:
                 // Players take turns moving to a neighboring spot
-                if (cm.synced) {
-                    //Debug.Log(toio_status);
-                    if(toio_status == 0 && !flag_ui)
-                    {
-                        // Debug.Log("Waiting for ui input");
-                        toio_status = 1; // Bypass ui input for testing
-                        ui.ShowPlayerOrder(turn);
-                        flag_ui = true;
+                if (_cm.synced) {
+                    //Debug.Log(_inputStatus);
+                    if(_inputStatus == 0 && !_flagUi) {
+                        // Bypass ui input for testing
+                        _inputStatus = 1;
+
+                        ui.ShowPlayerOrder(_turn);
+                        _flagUi = true;
                     }
-                    else if(toio_status == 1)
+                    else if(_inputStatus == 1)
                     {
-                        // Debug.Log("Waiting for cubes to reach their spots");
-                        var p = player[turn];
-                        p.First.Move2Next(player[0].First.curr == player[1].First.curr);
+                        var p = _player[_turn];
+                        p.First.Move2Next(_player[0].First.Curr == _player[1].First.Curr);
                         if (p.First.mv.reached)
                         {
                             Debug.Log("reach");
                             p.IslandAction();
-                            if (player[0].First.curr == player[1].First.curr) {
-                                phase = 2;
+                            if (_player[0].First.Curr == _player[1].First.Curr) {
+                                _phase = 2;
                             }
                             p.First.RenewNext();
-                            turn++;
-                            if (turn >= player.Count) turn = 0;
-                            toio_status = 0;
-                            flag_ui = false;
+                            _turn++;
+                            if (_turn >= _player.Count) _turn = 0;
+                            _inputStatus = 0;
+                            _flagUi = false;
                         }
                     }
                 }
                 break;
             case 2:
                 // Battle
-                if (cm.synced) {
-                    if (!battle.Play()) {
-                        player[0].First.next = graph.V[0];
-                        player[1].First.next = graph.V[2];
-                        player[0].ResetStat();
-                        player[1].ResetStat();
-                        phase = 0;
+                if (_cm.synced) {
+                    if (!_battle.Play()) {
+                        _player[0].First.Next = _graph.V[0];
+                        _player[1].First.Next = _graph.V[2];
+                        _player[0].ResetStat();
+                        _player[1].ResetStat();
+                        _phase = 0;
                     }
                 }
                 break;
             default:
-                Debug.LogError("Invalid phase");
+                Debug.LogError("SimpleGraphScene: Invalid phase");
                 break;
         }
     }
 
     void OnDrawGizmos() {
-        if (!started) return;
+        if (!_started) return;
 
-        foreach (var v in graph.V) {
+        foreach (var v in _graph.V) {
             Gizmos.color = v.Value.Color;
             Gizmos.DrawSphere(v.Value.Pos3, v.Value.Radius3);
         }
 
-        foreach (var e in graph.E) {
+        foreach (var e in _graph.E) {
             Gizmos.color = new Color(0,0,0,1.0f);
             Gizmos.DrawLine(e.Src.Value.Pos3, e.Dst.Value.Pos3);
         }
@@ -188,7 +186,7 @@ public class SimpleGraphScene : MonoBehaviour
             int.TryParse(line[0], out x);
             int.TryParse(line[1], out y);
             int.TryParse(line[2], out r);
-            graph.V.Add(new Vertex(new Island(new Vector(x, y), r)));
+            _graph.V.Add(new Vertex(new Island(new Vector(x, y), r)));
             Debug.Log(string.Format("Add vertex with x:{0} y:{1} r:{2}", x, y, r));
         }
 
@@ -200,7 +198,7 @@ public class SimpleGraphScene : MonoBehaviour
             int.TryParse(line[0], out n1);
             int.TryParse(line[1], out n2);
             Debug.Log(string.Format("Add edge with n1:{0} n2:{1}", n1, n2));
-            graph.AddEdge(n1, n2);
+            _graph.AddEdge(n1, n2);
         }
     }
 
@@ -208,6 +206,6 @@ public class SimpleGraphScene : MonoBehaviour
     public void RollDice()
     {
         Debug.Log("Roll A DICE");
-        toio_status = 1;
+        _inputStatus = 1;
     }
 }
