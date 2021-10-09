@@ -2,69 +2,80 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player
-{
+public class Player {
+    // Hp: the amount of damage the character can take
+    // Str: Helps with the accumulation of energy
+    // Luck: the likelihood that the character can dodge an attack
+    // Energy: The potential to deal damage to opponents
+    public class Stats {
+        public int Hp;
+        public int Str;
+        public int Luck;
+        public float Energy;
+    }
+    
+    public Character First;
+    public Character Second;
+    public Stats Stat;
+    public int Point;
+    public float BattleX;
+    public float BattleY;
+
     public Player(Character first, Character second) {
         First = first;
         Second = second;
-        stat = new Stat();
+        Stat = new Stats();
+        Point = 0;
         ResetStat();
     }
 
-    public class Stat {
-        public int hp { get; set; }
-        public int atk { get; set; }
-        public int dex { get; set; }
-    }
-    
-    public Character First { get; set; }
-    public Character Second { get; set; }
-    public Stat stat { get; set; }
-
     public void ResetStat() {
-        stat.hp = 3;
-        stat.atk = 0;
-        stat.dex = 0;
+        Stat.Hp = 3;
+        Stat.Str = 0;
+        Stat.Luck = 0;
+        Stat.Energy = 0;
     }
 
     public void IslandAction() {
-        switch (First.curr.Value.type) {
-            case Island.Type.PowerUpHp:
+        switch (First.Curr.Value.Type) {
+            case Island.Types.PowerUpHp:
                 AddHp();
                 break;
-            case Island.Type.PowerUpAtk:
-                AddAtk();
+            case Island.Types.PowerUpAtk:
+                AddStr();
                 break;
-            case Island.Type.PowerUpDex:
-                AddDex();
+            case Island.Types.PowerUpDex:
+                AddLuck();
                 break;
-            case Island.Type.Prison:
+            case Island.Types.Prison:
                 GoToPrison();
+                break;
+            case Island.Types.Normal:
                 break;
             default:
                 break;
         }
     }
 
-    public void AddHp() {
-        stat.hp++;
-        First.cube.TurnLedOn(0, 255, 0, 500);
-        First.cube.PlayPresetSound(0);
+    private void AddHp() {
+        Stat.Hp++;
+        First.Cube.TurnLedOn(0, 255, 0, 500);
+        First.Cube.PlayPresetSound(0);
     }
 
-    public void AddAtk() {
-        stat.atk++;
-        First.cube.TurnLedOn(255, 0, 0, 500);
-        First.cube.PlayPresetSound(0);
+    private void AddStr() {
+        Stat.Str++;
+        First.Cube.TurnLedOn(255, 0, 0, 500);
+        First.Cube.PlayPresetSound(0);
     }
 
-    public void AddDex() {
-        stat.dex++;
-        First.cube.TurnLedOn(255, 140, 40, 500);
-        First.cube.PlayPresetSound(0);
+    private void AddLuck() {
+        Stat.Luck++;
+        First.Cube.TurnLedOn(255, 140, 40, 500);
+        First.Cube.PlayPresetSound(0);
     }
 
-    public void GoToPrison() {
-        First.cube.PlayPresetSound(1);
+    private void GoToPrison() {
+        First.Cube.PlayPresetSound(1);
     }
 }

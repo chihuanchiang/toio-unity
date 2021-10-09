@@ -1,56 +1,56 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using static System.Math;
 using UnityEngine;
 using toio;
 using toio.MathUtils;
-using static System.Math;
 
-public class Island{
-    public enum Type {Normal, Dummy, PowerUpHp, PowerUpAtk, PowerUpDex, Prison};
+public class Island {
+    public enum Types {Normal, Dummy, PowerUpHp, PowerUpAtk, PowerUpDex, Prison};
+
+#if (UNITY_EDITOR || UNITY_STANDALONE)
+    public const float OriginX = 455f, OriginY = 250f;
+#elif (UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL)
+    public const float OriginX = 402f, OriginY = 358f;
+#endif
+
+    public Color Color;
+    public Vector Pos;
+    public Vector3 Pos3;
+    public float Radius;
+    public float Radius3;
+    public Types Type;
 
     public Island(Vector pos, float radius) {
         Pos = pos;
         Radius = radius;
-        SetType(Type.Normal);
+        SetType(Types.Normal);
 
         float scale = 0.56f / 410f;
-        Pos3 = new Vector3((float)Pos.x - originX, 0.0f, originY - (float)Pos.y);
+        Pos3 = new Vector3((float)Pos.x - OriginX, 0.0f, OriginY - (float)Pos.y);
         Pos3 *= scale;
         Radius3 = Radius * scale;
     }
 
-#if (UNITY_EDITOR || UNITY_STANDALONE)
-    public static float originX = 455f, originY = 250f;
-#elif (UNITY_IOS || UNITY_ANDROID || UNITY_WEBGL)
-    public static float originX = 402f, originY = 358f;
-#endif
-
-    public Color Color { get; set; }
-    public Vector Pos { get; set; }
-    public Vector3 Pos3 { get; set; }
-    public float Radius { get; set; }
-    public float Radius3 { get; set; }
-    public Type type { get; set; }
-
-    public void SetType(Type type) {
-        this.type = type;
+    public void SetType(Types type) {
+        Type = type;
         switch (type) {
-            case Type.Normal:
+            case Types.Normal:
                 Color = new Color(0, 0, 1, 0.3f);
                 break;
-            case Type.Dummy:
+            case Types.Dummy:
                 Color = new Color(0.5f, 0.5f, 0.5f, 0.3f);
                 break;
-            case Type.PowerUpHp:
+            case Types.PowerUpHp:
                 Color = new Color(0, 1, 0, 0.3f);
                 break;
-            case Type.PowerUpAtk:
+            case Types.PowerUpAtk:
                 Color = new Color(1, 0, 0, 0.3f);
                 break;
-            case Type.PowerUpDex:
+            case Types.PowerUpDex:
                 Color = new Color(1, 0.6f, 0.2f, 0.3f);
                 break;
-            case Type.Prison:
+            case Types.Prison:
                 Color = new Color(0, 0, 0, 0.3f);
                 break;
             default:
