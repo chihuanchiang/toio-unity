@@ -9,66 +9,67 @@ public class Battle {
         Enter,
         Start,
         Charge,
+        Attack,
         Retreat,
         Face,
     }
 
-    private const float _x1 = Island.OriginX - 50;
-    private const float _x2 = Island.OriginX + 50;
-    private const float _y1 = Island.OriginY;
-    private const float _y2 = Island.OriginY;
+    private const float _chargeTime = 5.0f;
 
-    private Player _p1;
-    private Player _p2;
+    private List<Player> _player;
     private Phase _phase = Phase.Enter;
-    private bool _turn = false; // false: _p1's turn, true: _p2's turn
+    private int _turn = 0;
+    private int _invTurn { get { return (_turn == 1)?0:1; }}
+    private float _elapsedTime = 0.0f;
 
-    public Battle(Player p1, Player p2) {
-        _p1 = p1;
-        _p2 = p2;
+    public Battle(List<Player> player) {
+        _player = player;
+        _player[0].BattleX = Island.OriginX - 50;
+        _player[0].BattleY = Island.OriginY;
+        _player[1].BattleX = Island.OriginX + 50;
+        _player[1].BattleY = Island.OriginY;
     }
 
     public bool Play() {
-        _p1.First.Handle.Update();
-        _p2.First.Handle.Update();
+        _elapsedTime += Time.deltaTime;
+
+        foreach (var p in _player) {
+            p.First.Handle.Update();
+            p.First.Navigator.Update();
+        }
+
         Movement mv, mv1, mv2;
         switch(_phase) {
             case Phase.Enter:
-                // Both cubes move to their starting points
-                mv1 = _p1.First.Navigator.Navi2Target(_x1, _y1).Exec();
-                mv2 = _p2.First.Navigator.Navi2Target(_x2, _y2).Exec();
+                mv1 = _player[0].First.Navigator.Navi2Target(_player[0].BattleX, _player[0].BattleY).Exec();
+                mv2 = _player[1].First.Navigator.Navi2Target(_player[1].BattleX, _player[1].BattleY).Exec();
                 if (mv1.reached && mv2.reached) _phase = Phase.Start;
                 break;
             case Phase.Start:
-                // Turn to enemies
-                mv1 = _p1.First.Handle.Rotate2Target(_x2, _y2).Exec();
-                mv2 = _p2.First.Handle.Rotate2Target(_x1, _y1).Exec();
-                if (mv1.reached && mv2.reached) _phase = Phase.Charge;
+                mv1 = _player[0].First.Handle.Rotate2Target(_player[1].BattleX, _player[1].BattleY).Exec();
+                mv2 = _player[1].First.Handle.Rotate2Target(_player[0].BattleX, _player[0].BattleY).Exec();
+                if (mv1.reached && mv2.reached) {
+                    _elapsedTime = 0.0f;
+                    _phase = Phase.Charge;
+                }
                 break;
             case Phase.Charge:
-                if (_turn) {
-                    mv = _p1.First.Handle.Move2Target(_p2.First.Handle.x, _p2.First.Handle.y, tolerance:40).Exec();
-                } else {
-                    mv = _p2.First.Handle.Move2Target(_p1.First.Handle.x, _p1.First.Handle.y, tolerance:40).Exec();
-                }
+                _player[_turn].First.Handle.Move(0, _player[_turn].Stat.Energy * 20, 200);
+                if (_elapsedTime > _chargeTime) _phase = Phase.Attack;
+                break;
+            case Phase.Attack:
+                mv = _player[_turn].First.Handle.Move2Target(_player[_invTurn].First.Handle.x, _player[_invTurn].First.Handle.y, tolerance:40).Exec();
                 if (mv.reached) _phase = Phase.Retreat;
                 break;
             case Phase.Retreat:
-                if (_turn) {
-                    mv = _p1.First.Handle.Move2Target(_x1, _y1).Exec();
-                } else {
-                    mv = _p2.First.Handle.Move2Target(_x2, _y2).Exec();
-                }
+                mv = _player[_turn].First.Handle.Move2Target(_player[_turn].BattleX, _player[_turn].BattleY).Exec();
                 if (mv.reached) _phase = Phase.Face;
                 break;
             case Phase.Face:
-                if (_turn) {
-                    mv = _p1.First.Handle.Rotate2Target(_x2, _y2).Exec();
-                } else {
-                    mv = _p2.First.Handle.Rotate2Target(_x1, _y1).Exec();
-                }
+                mv = _player[_turn].First.Handle.Rotate2Target(_player[_invTurn].BattleX, _player[_invTurn].BattleY).Exec();
                 if (mv.reached) {
-                    _turn = !_turn;
+                    _turn = _invTurn;
+                    _elapsedTime = 0.0f;
                     _phase = Phase.Charge;
                 }
                 break;

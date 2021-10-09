@@ -74,7 +74,8 @@ public class SimpleGraphScene : MonoBehaviour
         }
 
         // Set up battle
-        _battle = new Battle(_player[0], _player[1]);
+        _battle = new Battle(_player);
+        // _battle = new Battle(_player[0], _player[1]);
 
         // Set the initial spot of each player's first character
         _player[0].First.Next = _graph.V[0];
@@ -110,18 +111,18 @@ public class SimpleGraphScene : MonoBehaviour
                 break;
             case 1:
                 // Players take turns moving to a neighboring spot
-                if (_cm.synced) {
-                    //Debug.Log(_inputStatus);
-                    if(_inputStatus == 0 && !_flagUi) {
-                        // Bypass ui input for testing
-                        _inputStatus = 1;
+                //Debug.Log(_inputStatus);
+                if(_inputStatus == 0 && !_flagUi) {
+                    // Bypass ui input for testing
+                    _inputStatus = 1;
 
-                        ui.ShowPlayerOrder(_turn);
-                        _flagUi = true;
-                    }
-                    else if(_inputStatus == 1)
-                    {
-                        var p = _player[_turn];
+                    ui.ShowPlayerOrder(_turn);
+                    _flagUi = true;
+                }
+                else if(_inputStatus == 1)
+                {
+                    var p = _player[_turn];
+                    if (_cm.synced) {
                         p.First.Move2Next(_player[0].First.Curr == _player[1].First.Curr);
                         if (p.First.mv.reached)
                         {
@@ -141,14 +142,12 @@ public class SimpleGraphScene : MonoBehaviour
                 break;
             case 2:
                 // Battle
-                if (_cm.synced) {
-                    if (!_battle.Play()) {
-                        _player[0].First.Next = _graph.V[0];
-                        _player[1].First.Next = _graph.V[2];
-                        _player[0].ResetStat();
-                        _player[1].ResetStat();
-                        _phase = 0;
-                    }
+                if (!_battle.Play()) {
+                    _player[0].First.Next = _graph.V[0];
+                    _player[1].First.Next = _graph.V[2];
+                    _player[0].ResetStat();
+                    _player[1].ResetStat();
+                    _phase = 0;
                 }
                 break;
             default:
