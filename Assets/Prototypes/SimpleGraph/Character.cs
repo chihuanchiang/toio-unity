@@ -8,6 +8,7 @@ public class Character {
     public CubeNavigator Navigator;
     public CubeHandle Handle;
     public Cube Cube;
+    public Vertex Home;
     public Vertex Next;
     public Vertex Curr;
     public Movement mv;
@@ -27,7 +28,11 @@ public class Character {
         }
     }
 
-    public void RenewNext() {
+    public void UpdateNext() {
         Next = Next.Adj[Random.Range(0, Next.Degree)];
+    }
+
+    public void Point2Home() {
+        Next = Home;
     }
 }

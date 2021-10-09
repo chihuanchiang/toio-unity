@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using static System.Math;
 using UnityEngine;
 using toio;
 using toio.Navigation;
 using toio.MathUtils;
-using static System.Math;
 using toio.Multimat;
 
 
@@ -75,14 +75,17 @@ public class SimpleGraphScene : MonoBehaviour
 
         // Set up battle
         _battle = new Battle(_player);
-        // _battle = new Battle(_player[0], _player[1]);
 
-        // Set the initial spot of each player's first character
-        _player[0].First.Next = _graph.V[0];
-        _player[1].First.Next = _graph.V[2];
-        // Set the initial spot of each player's second character
-        _player[0].Second.Next = _graph.V[8];
-        _player[1].Second.Next = _graph.V[9];
+        // Set the home spot of each character
+        _player[0].First.Home = _graph.V[0];
+        _player[1].First.Home = _graph.V[2];
+        _player[0].Second.Home = _graph.V[8];
+        _player[1].Second.Home = _graph.V[9];
+        // Set the first spot of each character to their home
+        foreach (var p in _player) {
+            p.First.Point2Home();
+            p.Second.Point2Home();
+        }
 
         _started = true;
     }
@@ -102,7 +105,7 @@ public class SimpleGraphScene : MonoBehaviour
                     }
                     if (allReached) {
                         foreach (var p in _player) {
-                            p.First.RenewNext();
+                            p.First.UpdateNext();
                         }
                         _phase = 1;
                         ui.OpenBtn();
@@ -131,7 +134,7 @@ public class SimpleGraphScene : MonoBehaviour
                             if (_player[0].First.Curr == _player[1].First.Curr) {
                                 _phase = 2;
                             }
-                            p.First.RenewNext();
+                            p.First.UpdateNext();
                             _turn++;
                             if (_turn >= _player.Count) _turn = 0;
                             _inputStatus = 0;
@@ -143,10 +146,10 @@ public class SimpleGraphScene : MonoBehaviour
             case 2:
                 // Battle
                 if (!_battle.Play()) {
-                    _player[0].First.Next = _graph.V[0];
-                    _player[1].First.Next = _graph.V[2];
-                    _player[0].ResetStat();
-                    _player[1].ResetStat();
+                    foreach (var p in _player) {
+                        p.First.Point2Home();
+                        p.ResetStat();
+                    }
                     _phase = 0;
                 }
                 break;
