@@ -17,6 +17,7 @@ public class Player {
     public Character First;
     public Character Second;
     public Stats Stat;
+    public int Point;
     public float BattleX;
     public float BattleY;
 
@@ -24,6 +25,7 @@ public class Player {
         First = first;
         Second = second;
         Stat = new Stats();
+        Point = 0;
         ResetStat();
     }
 
@@ -40,10 +42,10 @@ public class Player {
                 AddHp();
                 break;
             case Island.Types.PowerUpAtk:
-                AddAtk();
+                AddStr();
                 break;
             case Island.Types.PowerUpDex:
-                AddDex();
+                AddLuck();
                 break;
             case Island.Types.Prison:
                 GoToPrison();
@@ -55,25 +57,25 @@ public class Player {
         }
     }
 
-    public void AddHp() {
+    private void AddHp() {
         Stat.Hp++;
         First.Cube.TurnLedOn(0, 255, 0, 500);
         First.Cube.PlayPresetSound(0);
     }
 
-    public void AddAtk() {
+    private void AddStr() {
         Stat.Str++;
         First.Cube.TurnLedOn(255, 0, 0, 500);
         First.Cube.PlayPresetSound(0);
     }
 
-    public void AddDex() {
+    private void AddLuck() {
         Stat.Luck++;
         First.Cube.TurnLedOn(255, 140, 40, 500);
         First.Cube.PlayPresetSound(0);
     }
 
-    public void GoToPrison() {
+    private void GoToPrison() {
         First.Cube.PlayPresetSound(1);
     }
 }

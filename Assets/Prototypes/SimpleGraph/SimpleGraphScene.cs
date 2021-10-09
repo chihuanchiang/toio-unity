@@ -149,7 +149,6 @@ public class SimpleGraphScene : MonoBehaviour
                 if (!_battle.Play()) {
                     foreach (var p in _player) {
                         p.First.Point2Home();
-                        p.ResetStat();
                     }
                     _phase = 0;
                 }
