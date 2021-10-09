@@ -11,6 +11,7 @@ using toio.Multimat;
 public class SimpleGraphScene : MonoBehaviour
 {
     public UI ui;
+    public bool BypassUi = false;
     
     private Graph _graph;
     private CubeManager _cm;
@@ -117,7 +118,7 @@ public class SimpleGraphScene : MonoBehaviour
                 //Debug.Log(_inputStatus);
                 if(_inputStatus == 0 && !_flagUi) {
                     // Bypass ui input for testing
-                    _inputStatus = 1;
+                    if (BypassUi) _inputStatus = 1;
 
                     ui.ShowPlayerOrder(_turn);
                     _flagUi = true;

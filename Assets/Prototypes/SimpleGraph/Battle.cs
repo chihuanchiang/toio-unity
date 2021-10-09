@@ -54,12 +54,18 @@ public class Battle {
                 }
                 break;
             case Phase.Charge:
+                _player[_turn].Stat.Energy += 0.5f * _player[_turn].Second.Cube.shakeLevel * (float)Time.deltaTime;
                 _player[_turn].First.Handle.Move(0, _player[_turn].Stat.Energy * 20, 200);
                 if (_elapsedTime > _chargeTime) _phase = Phase.Attack;
                 break;
             case Phase.Attack:
                 mv = _player[_turn].First.Handle.Move2Target(_player[_invTurn].First.Handle.x, _player[_invTurn].First.Handle.y, tolerance:40).Exec();
-                if (mv.reached) _phase = Phase.Retreat;
+                if (mv.reached) {
+                    _player[_invTurn].First.Cube.PlayPresetSound(1);
+                    _player[_invTurn].First.Cube.TurnLedOn(255, 0, 0, 500);
+                    _player[_turn].Stat.Energy = 0;
+                    _phase = Phase.Retreat;
+                }
                 break;
             case Phase.Retreat:
                 mv = _player[_turn].First.Handle.Move2Target(_player[_turn].BattleX, _player[_turn].BattleY).Exec();

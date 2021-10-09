@@ -11,7 +11,7 @@ public class Player {
         public int Hp;
         public int Str;
         public int Luck;
-        public int Energy;
+        public float Energy;
     }
     
     public Character First;
@@ -31,7 +31,7 @@ public class Player {
         Stat.Hp = 3;
         Stat.Str = 0;
         Stat.Luck = 0;
-        Stat.Energy = 5;
+        Stat.Energy = 0;
     }
 
     public void IslandAction() {
