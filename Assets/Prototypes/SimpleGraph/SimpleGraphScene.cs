@@ -127,19 +127,28 @@ public class SimpleGraphScene : MonoBehaviour
                 {
                     var p = _player[_turn];
                     if (_cm.synced) {
-                        p.First.Move2Next(_player[0].First.Curr == _player[1].First.Curr);
+                        p.First.Move2Next();
+
                         if (p.First.mv.reached)
                         {
                             Debug.Log("reach");
+                            p.First.Curr = p.First.Next;
                             p.IslandAction();
-                            if (_player[0].First.Curr == _player[1].First.Curr) {
+                            if (p.First.Curr.Value.Occupied) {
+                                p.First.Curr.Value.Occupied = false;
                                 _phase = 2;
 
                                 ui.TurnOffMoveText();
                                 ui.TurnOffMoveBtn();
                                 ui.TurnOnBattleText();
+                            } else {
+                                p.First.Curr.Value.Occupied = true;
                             }
-                            p.First.UpdateNext();
+
+                            do {
+                                p.First.UpdateNext();
+                            } while (p.First.Next.Value.Occupied && (p.First.Next.Value.Type == Island.Types.Prison));
+
                             _turn++;
                             if (_turn >= _player.Count) _turn = 0;
                             _inputStatus = 0;
@@ -196,7 +205,7 @@ public class SimpleGraphScene : MonoBehaviour
             int.TryParse(line[1], out y);
             int.TryParse(line[2], out r);
             _graph.V.Add(new Vertex(new Island(new Vector(x, y), r)));
-            Debug.Log(string.Format("Add vertex with x:{0} y:{1} r:{2}", x, y, r));
+            // Debug.Log(string.Format("Add vertex with x:{0} y:{1} r:{2}", x, y, r));
         }
 
         // Parse edges
@@ -206,7 +215,7 @@ public class SimpleGraphScene : MonoBehaviour
             int n1, n2;
             int.TryParse(line[0], out n1);
             int.TryParse(line[1], out n2);
-            Debug.Log(string.Format("Add edge with n1:{0} n2:{1}", n1, n2));
+            // Debug.Log(string.Format("Add edge with n1:{0} n2:{1}", n1, n2));
             _graph.AddEdge(n1, n2);
         }
     }

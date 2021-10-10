@@ -19,9 +19,9 @@ public class Character {
         Cube = cube;
     }
 
-    public void Move2Next(bool occupied=false) {
-        Curr = Next;
-        if (occupied) {
+    public void Move2Next() {
+        Curr.Value.Occupied = false;
+        if (Next.Value.Occupied) {
             mv = Handle.Move2Target(Next.Value.Pos.x, Next.Value.Pos.y, tolerance:80).Exec();
         } else {
             mv = Handle.Move2Target(Next.Value.Pos.x, Next.Value.Pos.y).Exec();
@@ -29,10 +29,11 @@ public class Character {
     }
 
     public void UpdateNext() {
-        Next = Next.Adj[Random.Range(0, Next.Degree)];
+        Next = Curr.Adj[Random.Range(0, Curr.Degree)];
     }
 
     public void Point2Home() {
         Next = Home;
+        Curr = Home;
     }
 }

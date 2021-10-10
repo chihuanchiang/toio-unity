@@ -20,6 +20,7 @@ public class Island {
     public float Radius;
     public float Radius3;
     public Types Type;
+    public bool Occupied = false;
 
     public Island(Vector pos, float radius) {
         Pos = pos;
