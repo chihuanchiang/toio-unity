@@ -6,7 +6,7 @@ using toio;
 using toio.MathUtils;
 
 public class Island {
-    public enum Types {Normal, Dummy, PowerUpHp, PowerUpAtk, PowerUpDex, Prison};
+    public enum Types {Normal, Dummy, PowerUpHp, PowerUpStr, PowerUpLuck, Prison};
 
 #if (UNITY_EDITOR || UNITY_STANDALONE)
     public const float OriginX = 455f, OriginY = 250f;
@@ -44,10 +44,10 @@ public class Island {
             case Types.PowerUpHp:
                 Color = new Color(0, 1, 0, 0.3f);
                 break;
-            case Types.PowerUpAtk:
+            case Types.PowerUpStr:
                 Color = new Color(1, 0, 0, 0.3f);
                 break;
-            case Types.PowerUpDex:
+            case Types.PowerUpLuck:
                 Color = new Color(1, 0.6f, 0.2f, 0.3f);
                 break;
             case Types.Prison:

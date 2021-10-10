@@ -33,9 +33,9 @@ public class SimpleGraphScene : MonoBehaviour
         ReadMap("map2_devmat");
 #endif
         // Set special island types
-        _graph.V[1].Value.SetType(Island.Types.PowerUpAtk);
+        _graph.V[1].Value.SetType(Island.Types.PowerUpStr);
         _graph.V[4].Value.SetType(Island.Types.Prison);
-        _graph.V[6].Value.SetType(Island.Types.PowerUpDex);
+        _graph.V[6].Value.SetType(Island.Types.PowerUpLuck);
         _graph.V[7].Value.SetType(Island.Types.PowerUpHp);
         _graph.V[8].Value.SetType(Island.Types.Dummy);
         _graph.V[9].Value.SetType(Island.Types.Dummy);

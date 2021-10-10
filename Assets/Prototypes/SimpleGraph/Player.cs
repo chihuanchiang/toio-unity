@@ -41,10 +41,10 @@ public class Player {
             case Island.Types.PowerUpHp:
                 AddHp();
                 break;
-            case Island.Types.PowerUpAtk:
+            case Island.Types.PowerUpStr:
                 AddStr();
                 break;
-            case Island.Types.PowerUpDex:
+            case Island.Types.PowerUpLuck:
                 AddLuck();
                 break;
             case Island.Types.Prison:
