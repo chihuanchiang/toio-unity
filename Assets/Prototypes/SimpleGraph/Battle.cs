@@ -43,7 +43,11 @@ public class Battle {
         }
 
         Movement mv, mv1, mv2;
-        switch(_phase) {
+
+        GameObject.Find("scene").GetComponent<UI>().ShowBattleStats(_player[0].Stat.Hp, _player[0].Stat.Energy, _player[0].Stat.Luck, _player[1].Stat.Hp, _player[1].Stat.Energy, _player[1].Stat.Luck);
+
+        switch (_phase) {
+
             case Phase.Enter:
                 mv1 = _player[0].First.Navigator.Navi2Target(_player[0].BattleX, _player[0].BattleY).Exec();
                 mv2 = _player[1].First.Navigator.Navi2Target(_player[1].BattleX, _player[1].BattleY).Exec();
@@ -81,7 +85,7 @@ public class Battle {
                 if (mv.reached) {
                     _player[_invTurn].First.Cube.PlayPresetSound(1);
                     _player[_invTurn].First.Cube.TurnLedOn(255, 0, 0, 500);
-                    _player[_invTurn].Stat.Hp -= (int)(_player[_turn].Stat.Energy * 0.1f);
+                    _player[_invTurn].Stat.Hp -= (int)(_player[_turn].Stat.Energy * 0.1f); 
                     _player[_turn].Stat.Energy = 0;
                     if (_player[_invTurn].Stat.Hp > 0) {
                         _phase = Phase.Retreat;
