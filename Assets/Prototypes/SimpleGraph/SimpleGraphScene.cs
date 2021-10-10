@@ -21,6 +21,7 @@ public class SimpleGraphScene : MonoBehaviour
     private bool _started = false;
     private int _phase = 0;
     private int _turn = 0;
+    private int _invTurn { get { return (_turn + 1) % 2; }}
     private int _inputStatus = 0; //0: toio stop (wait for ui input), 1:toio moves (wait for cubes to reach their spots)
     private bool _flagUi = false;
 
@@ -176,10 +177,32 @@ public class SimpleGraphScene : MonoBehaviour
                     foreach (var p in _player) {
                         p.First.Point2Home();
                     }
-                    _phase = 0;
+                    
+                    if (_player[0].Win()) {
+                        _turn = 0;
+                        _phase = 3;
+                    } else if (_player[1].Win()) {
+                        _turn = 1;
+                        _phase = 3;
+                    } else {
+                        _phase = 0;
+                    }
 
                     ui.TurnOffBattleText();
                     ui.TurnOnMoveText();
+                }
+                break;
+
+            case 3:
+                // Showing who wins the game
+                var tar = Vector.fromRadMag(Time.time/2, 120) + new Vector(Island.OriginX, Island.OriginY);
+                var tar1 = Vector.fromRadMag(Time.time/2 + PI * 2 / 3, 120) + new Vector(Island.OriginX, Island.OriginY);
+                var tar2 = Vector.fromRadMag(Time.time/2 + PI * 4 / 3, 120) + new Vector(Island.OriginX, Island.OriginY);
+                if (_cm.synced) {
+                    _player[_turn].First.Navigator.Navi2Target(Island.OriginX, Island.OriginY).Exec();
+                    _player[_invTurn].First.Navigator.Navi2Target(tar).Exec();
+                    _player[0].Second.Navigator.Navi2Target(tar1).Exec();
+                    _player[1].Second.Navigator.Navi2Target(tar2).Exec();
                 }
                 break;
             default:
