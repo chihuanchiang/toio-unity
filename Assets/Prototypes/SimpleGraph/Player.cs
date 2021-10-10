@@ -58,6 +58,10 @@ public class Player {
         }
     }
 
+    public bool Win() {
+        return Point >= 3;
+    }
+
     private void AddHp() {
         Stat.Hp += 20;
         First.Cube.TurnLedOn(0, 255, 0, 500);

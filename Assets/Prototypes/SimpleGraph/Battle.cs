@@ -74,6 +74,7 @@ public class Battle {
 
             case Phase.Miss:
                 mv = _player[_turn].First.Handle.Move2Target(_player[_invTurn].First.Handle.x, _player[_invTurn].First.Handle.y - 60).Exec();
+                _player[_invTurn].First.Handle.Rotate2Target(_player[_turn].First.Handle.x, _player[_turn].First.Handle.y).Exec();
                 if (mv.reached) {
                     _player[_turn].Stat.Energy = 0;
                     _phase = Phase.Retreat;
