@@ -52,18 +52,18 @@ public class Prison {
                 break;
             
             case Prison.Phase.Chase:
-                _player[turn].First.Navigator.NaviAwayTarget(_player[0].Second.Handle.x, _player[0].Second.Handle.y, 40).Exec();
-                mv1 = _player[0].Second.Handle.Move2Target(_player[turn].First.Handle.x, _player[turn].First.Handle.y, 80, tolerance:80).Exec();
-                mv2 = _player[1].Second.Handle.Move2Target(_player[turn].First.Handle.x, _player[turn].First.Handle.y, 80, tolerance:80).Exec();
+                _player[turn].First.Navigator.NaviAwayTarget(_player[0].Second.Handle.x, _player[0].Second.Handle.y, 20).Exec();
+                mv1 = _player[0].Second.Handle.Move2Target(_player[turn].First.Handle.x, _player[turn].First.Handle.y, 80, tolerance:60).Exec();
+                mv2 = _player[1].Second.Handle.Move2Target(_player[turn].First.Handle.x, _player[turn].First.Handle.y, 80, tolerance:60).Exec();
                 if (mv1.reached || mv2.reached) {
                     _phase = Prison.Phase.Caught;
                 }
                 break;
 
             case Prison.Phase.Caught:
-                mv = _player[turn].First.Handle.Move2Target(_v.Value.Pos, tolerance:40).Exec();
-                _player[0].Second.Handle.Move2Target(_player[turn].First.Handle.x, _player[turn].First.Handle.y, 40, tolerance:40).Exec();
-                _player[1].Second.Handle.Move2Target(_player[turn].First.Handle.x, _player[turn].First.Handle.y, 40, tolerance:40).Exec();
+                mv = _player[turn].First.Navigator.Navi2Target(_v.Value.Pos, 30).Exec();
+                _player[0].Second.Handle.Rotate2Target(_player[turn].First.Handle.x, _player[turn].First.Handle.y).Exec();
+                _player[1].Second.Handle.Rotate2Target(_player[turn].First.Handle.x, _player[turn].First.Handle.y).Exec();
                 if (mv.reached) {
                     _elapsedTime = 0;
                     _phase = Prison.Phase.Serve;
