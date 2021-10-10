@@ -109,7 +109,7 @@ public class SimpleGraphScene : MonoBehaviour
                             p.First.UpdateNext();
                         }
                         _phase = 1;
-                        ui.OpenBtn();
+                        ui.TurnOnMoveBtn();
                     }
                 }
                 break;
@@ -134,6 +134,10 @@ public class SimpleGraphScene : MonoBehaviour
                             p.IslandAction();
                             if (_player[0].First.Curr == _player[1].First.Curr) {
                                 _phase = 2;
+
+                                ui.TurnOffMoveText();
+                                ui.TurnOffMoveBtn();
+                                ui.TurnOnBattleText();
                             }
                             p.First.UpdateNext();
                             _turn++;
@@ -151,6 +155,9 @@ public class SimpleGraphScene : MonoBehaviour
                         p.First.Point2Home();
                     }
                     _phase = 0;
+
+                    ui.TurnOffBattleText();
+                    ui.TurnOnMoveText();
                 }
                 break;
             default:
