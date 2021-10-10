@@ -30,7 +30,7 @@ public class Player {
     }
 
     public void ResetStat() {
-        Stat.Hp = 3;
+        Stat.Hp = 100;
         Stat.Str = 0;
         Stat.Luck = 0;
         Stat.Energy = 0;
@@ -58,19 +58,20 @@ public class Player {
     }
 
     private void AddHp() {
-        Stat.Hp++;
+        Stat.Hp += 20;
         First.Cube.TurnLedOn(0, 255, 0, 500);
         First.Cube.PlayPresetSound(0);
     }
 
     private void AddStr() {
-        Stat.Str++;
+        Stat.Str += 10;
         First.Cube.TurnLedOn(255, 0, 0, 500);
         First.Cube.PlayPresetSound(0);
     }
 
     private void AddLuck() {
-        Stat.Luck++;
+        // Luck should be no more than 90
+        if (Stat.Luck <= 80) Stat.Luck += 10;
         First.Cube.TurnLedOn(255, 140, 40, 500);
         First.Cube.PlayPresetSound(0);
     }
