@@ -33,7 +33,8 @@ public class Player {
         Stat.Hp = 100;
         Stat.Str = 0;
         Stat.Luck = 0;
-        Stat.Energy = 0;
+        // Stat.Energy = 0;
+        Stat.Energy = 200; // for testing
     }
 
     public void IslandAction() {

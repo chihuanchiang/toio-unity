@@ -79,7 +79,7 @@ public class SimpleGraphScene : MonoBehaviour
         _battle = new Battle(_player);
 
         // Set up prison
-        _prison = new Prison(_player);
+        _prison = new Prison(_player, _graph.V[4]);
 
         // Set the home spot of each character
         _player[0].First.Home = _graph.V[0];
