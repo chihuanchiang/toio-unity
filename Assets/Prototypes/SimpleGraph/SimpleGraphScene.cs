@@ -195,9 +195,9 @@ public class SimpleGraphScene : MonoBehaviour
 
             case 3:
                 // Showing who wins the game
-                var tar = Vector.fromRadMag(Time.time/2, 120) + new Vector(Island.OriginX, Island.OriginY);
-                var tar1 = Vector.fromRadMag(Time.time/2 + PI * 2 / 3, 120) + new Vector(Island.OriginX, Island.OriginY);
-                var tar2 = Vector.fromRadMag(Time.time/2 + PI * 4 / 3, 120) + new Vector(Island.OriginX, Island.OriginY);
+                var tar = Vector.fromRadMag(Time.time/2, 95) + new Vector(Island.OriginX, Island.OriginY);
+                var tar1 = Vector.fromRadMag(Time.time/2 + PI * 2 / 3, 95) + new Vector(Island.OriginX, Island.OriginY);
+                var tar2 = Vector.fromRadMag(Time.time/2 + PI * 4 / 3, 95) + new Vector(Island.OriginX, Island.OriginY);
                 if (_cm.synced) {
                     _player[_turn].First.Navigator.Navi2Target(Island.OriginX, Island.OriginY).Exec();
                     _player[_invTurn].First.Navigator.Navi2Target(tar).Exec();
