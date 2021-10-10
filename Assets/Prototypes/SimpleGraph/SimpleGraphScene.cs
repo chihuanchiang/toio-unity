@@ -17,6 +17,7 @@ public class SimpleGraphScene : MonoBehaviour
     private CubeManager _cm;
     private List<Player> _player = new List<Player>();
     private Battle _battle;
+    private Prison _prison;
     private bool _started = false;
     private int _phase = 0;
     private int _turn = 0;
@@ -77,6 +78,9 @@ public class SimpleGraphScene : MonoBehaviour
         // Set up battle
         _battle = new Battle(_player);
 
+        // Set up prison
+        _prison = new Prison(_player);
+
         // Set the home spot of each character
         _player[0].First.Home = _graph.V[0];
         _player[1].First.Home = _graph.V[2];
@@ -126,7 +130,20 @@ public class SimpleGraphScene : MonoBehaviour
                 else if(_inputStatus == 1)
                 {
                     var p = _player[_turn];
-                    if (_cm.synced) {
+                    if ((p.First.Curr.Value.Type == Island.Types.Prison) && (p.First.Curr == p.First.Next)) {
+                        if (!_prison.Stay(_turn)) {
+                            p.First.UpdateNext();
+                            _turn++;
+                            if (_turn >= _player.Count) _turn = 0;
+                            _inputStatus = 0;
+                            _flagUi = false;
+                        }
+                    } else if (_cm.synced) {
+                        if (p.First.Curr == p.First.Next) {
+                            do {
+                                p.First.UpdateNext();
+                            } while (p.First.Next.Value.Occupied && (p.First.Next.Value.Type == Island.Types.Prison));
+                        }
                         p.First.Move2Next();
 
                         if (p.First.mv.reached)
@@ -144,10 +161,6 @@ public class SimpleGraphScene : MonoBehaviour
                             } else {
                                 p.First.Curr.Value.Occupied = true;
                             }
-
-                            do {
-                                p.First.UpdateNext();
-                            } while (p.First.Next.Value.Occupied && (p.First.Next.Value.Type == Island.Types.Prison));
 
                             _turn++;
                             if (_turn >= _player.Count) _turn = 0;
