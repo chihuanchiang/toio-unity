@@ -31,7 +31,7 @@ public class Battle {
         _player[0].BattleY = Island.OriginY;
         _player[1].BattleX = Island.OriginX + 50;
         _player[1].BattleY = Island.OriginY;
-        ResetBattle();
+        Reset();
     }
 
     public bool Play() {
@@ -44,7 +44,7 @@ public class Battle {
 
         Movement mv, mv1, mv2;
 
-        GameObject.Find("scene").GetComponent<UI>().ShowBattleStats(_player[0].Stat.Hp, _player[0].Stat.Energy, _player[0].Stat.Luck, _player[1].Stat.Hp, _player[1].Stat.Energy, _player[1].Stat.Luck);
+        GameObject.Find("scene").GetComponent<UI>().ShowBattleStats(_player[0].Stat.Hp, (int)_player[0].Stat.Energy, _player[0].Stat.Luck, _player[1].Stat.Hp, (int)_player[1].Stat.Energy, _player[1].Stat.Luck);
 
         switch (_phase) {
 
@@ -64,11 +64,11 @@ public class Battle {
                 break;
 
             case Phase.Charge:
-                _player[_turn].Stat.Energy += 0.5f * _player[_turn].Second.Cube.shakeLevel * (1.0f + 0.2f * _player[_turn].Stat.Str) * (float)Time.deltaTime;
+                _player[_turn].Stat.Energy += _player[_turn].Second.Cube.shakeLevel * (100f + _player[_turn].Stat.Str) / 100f * (float)Time.deltaTime;
                 int en = (int)_player[_turn].Stat.Energy;
                 _player[_turn].First.Handle.Move(0, 10 + en * 20, 200);
                 if (_elapsedTime > _chargeTime) {
-                    _phase = (Random.Range(0, 10) < _player[_invTurn].Stat.Luck)?Phase.Miss:Phase.Attack;
+                    _phase = (Random.Range(0, 100) < _player[_invTurn].Stat.Luck)?Phase.Miss:Phase.Attack;
                 }
                 break;
 
@@ -85,7 +85,7 @@ public class Battle {
                 if (mv.reached) {
                     _player[_invTurn].First.Cube.PlayPresetSound(1);
                     _player[_invTurn].First.Cube.TurnLedOn(255, 0, 0, 500);
-                    _player[_invTurn].Stat.Hp -= (int)(_player[_turn].Stat.Energy * 0.1f); 
+                    _player[_invTurn].Stat.Hp -= (int)_player[_turn].Stat.Energy; 
                     _player[_turn].Stat.Energy = 0;
                     if (_player[_invTurn].Stat.Hp > 0) {
                         _phase = Phase.Retreat;
@@ -106,7 +106,7 @@ public class Battle {
             case Phase.Defeat:
                 _player[_invTurn].First.Handle.Move(0, 50, 200);
                 if (_elapsedTime > _defeatTime) {
-                    ResetBattle();
+                    Reset();
                     foreach (var p in _player) {
                         p.ResetStat();
                     }
@@ -130,7 +130,7 @@ public class Battle {
         return true;
     }
 
-    private void ResetBattle() {
+    private void Reset() {
         _phase = Phase.Enter;
         _turn = 0;
     }

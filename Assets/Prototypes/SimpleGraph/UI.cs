@@ -17,7 +17,7 @@ public class UI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        MoveText.text = "Welcome to Tonopoly Game!";
+        MoveText.text = "Welcome to Tonopoly!";
     }
 
     // Update is called once per frame
@@ -69,10 +69,10 @@ public class UI : MonoBehaviour
     //show which player's turn
     public void ShowPlayerOrder(int playernum) 
     {
-        MoveText.text = "Now it's Player " + (playernum+1);
+        MoveText.text = "It's Player" + (playernum+1) + "'s turn";
     }
     
-    public void ShowBattleStats(int P1_Hp, float P1_Energy, int P1_Luck, int P2_Hp, float P2_Energy, int P2_Luck)
+    public void ShowBattleStats(int P1_Hp, int P1_Energy, int P1_Luck, int P2_Hp, int P2_Energy, int P2_Luck)
     {
         //BattleText_P1.text = "P1\n <color = green> HP: 3 </color>\n <color = red> ATK:" + P1_Energy+ "</color>\n <color = yellow> Luck:" + P1_Luck + " </color>";
         //Player1

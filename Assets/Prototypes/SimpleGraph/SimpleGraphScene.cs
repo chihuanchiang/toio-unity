@@ -17,6 +17,7 @@ public class SimpleGraphScene : MonoBehaviour
     private CubeManager _cm;
     private List<Player> _player = new List<Player>();
     private Battle _battle;
+    private Prison _prison;
     private bool _started = false;
     private int _phase = 0;
     private int _turn = 0;
@@ -33,9 +34,9 @@ public class SimpleGraphScene : MonoBehaviour
         ReadMap("map2_devmat");
 #endif
         // Set special island types
-        _graph.V[1].Value.SetType(Island.Types.PowerUpAtk);
+        _graph.V[1].Value.SetType(Island.Types.PowerUpStr);
         _graph.V[4].Value.SetType(Island.Types.Prison);
-        _graph.V[6].Value.SetType(Island.Types.PowerUpDex);
+        _graph.V[6].Value.SetType(Island.Types.PowerUpLuck);
         _graph.V[7].Value.SetType(Island.Types.PowerUpHp);
         _graph.V[8].Value.SetType(Island.Types.Dummy);
         _graph.V[9].Value.SetType(Island.Types.Dummy);
@@ -76,6 +77,9 @@ public class SimpleGraphScene : MonoBehaviour
 
         // Set up battle
         _battle = new Battle(_player);
+
+        // Set up prison
+        _prison = new Prison(_player, _graph.V[4]);
 
         // Set the home spot of each character
         _player[0].First.Home = _graph.V[0];
@@ -126,20 +130,38 @@ public class SimpleGraphScene : MonoBehaviour
                 else if(_inputStatus == 1)
                 {
                     var p = _player[_turn];
-                    if (_cm.synced) {
-                        p.First.Move2Next(_player[0].First.Curr == _player[1].First.Curr);
+                    if ((p.First.Curr.Value.Type == Island.Types.Prison) && (p.First.Curr == p.First.Next)) {
+                        if (!_prison.Stay(_turn)) {
+                            p.First.UpdateNext();
+                            _turn++;
+                            if (_turn >= _player.Count) _turn = 0;
+                            _inputStatus = 0;
+                            _flagUi = false;
+                        }
+                    } else if (_cm.synced) {
+                        if (p.First.Curr == p.First.Next) {
+                            do {
+                                p.First.UpdateNext();
+                            } while (p.First.Next.Value.Occupied && (p.First.Next.Value.Type == Island.Types.Prison));
+                        }
+                        p.First.Move2Next();
+
                         if (p.First.mv.reached)
                         {
                             Debug.Log("reach");
+                            p.First.Curr = p.First.Next;
                             p.IslandAction();
-                            if (_player[0].First.Curr == _player[1].First.Curr) {
+                            if (p.First.Curr.Value.Occupied) {
+                                p.First.Curr.Value.Occupied = false;
                                 _phase = 2;
 
                                 ui.TurnOffMoveText();
                                 ui.TurnOffMoveBtn();
                                 ui.TurnOnBattleText();
+                            } else {
+                                p.First.Curr.Value.Occupied = true;
                             }
-                            p.First.UpdateNext();
+
                             _turn++;
                             if (_turn >= _player.Count) _turn = 0;
                             _inputStatus = 0;
@@ -196,7 +218,7 @@ public class SimpleGraphScene : MonoBehaviour
             int.TryParse(line[1], out y);
             int.TryParse(line[2], out r);
             _graph.V.Add(new Vertex(new Island(new Vector(x, y), r)));
-            Debug.Log(string.Format("Add vertex with x:{0} y:{1} r:{2}", x, y, r));
+            // Debug.Log(string.Format("Add vertex with x:{0} y:{1} r:{2}", x, y, r));
         }
 
         // Parse edges
@@ -206,7 +228,7 @@ public class SimpleGraphScene : MonoBehaviour
             int n1, n2;
             int.TryParse(line[0], out n1);
             int.TryParse(line[1], out n2);
-            Debug.Log(string.Format("Add edge with n1:{0} n2:{1}", n1, n2));
+            // Debug.Log(string.Format("Add edge with n1:{0} n2:{1}", n1, n2));
             _graph.AddEdge(n1, n2);
         }
     }
