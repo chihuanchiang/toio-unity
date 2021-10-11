@@ -13,11 +13,17 @@ public class UI : MonoBehaviour
     public Text BattleText_P2;
     public Text[] P2_StatsText;
 
+    public List<Image> P1_PointList;
+    public List<Image> P2_PointList;
+    public Sprite empty_img;
+    public Sprite win_img;
+
 
     // Start is called before the first frame update
     void Start()
     {
         MoveText.text = "Welcome to Tonopoly!";
+
     }
 
     // Update is called once per frame
@@ -90,5 +96,46 @@ public class UI : MonoBehaviour
         P2_StatsText[1].color = Color.red;
         P2_StatsText[2].text = "Luck:" + P2_Luck;
         P2_StatsText[2].color = Color.yellow;
+    }
+
+    public void ShowBattlePoint(int P1_point, int P2_point)
+    {
+        switch (P1_point)
+        {
+            case 1:
+                Debug.Log("1");
+                P1_PointList[0].sprite = win_img;
+                break;
+            case 2:
+                Debug.Log("2");
+                P1_PointList[1].sprite = win_img;
+                break;
+            case 3:
+                Debug.Log("3");
+                P1_PointList[2].sprite = win_img;
+                break;
+        }
+
+        switch (P2_point)
+        {
+            case 1:
+                Debug.Log("1");
+                P2_PointList[0].sprite = win_img;
+                break;
+            case 2:
+                Debug.Log("2");
+                P2_PointList[1].sprite = win_img;
+                break;
+            case 3:
+                Debug.Log("3");
+                P2_PointList[2].sprite = win_img;
+                break;
+        }
+    }
+
+    public void ShowVictoryMsg(int playerNum)
+    {
+        MoveText.text = "Congratulations, Player" + playerNum +" !";
+        MoveText.color = Color.yellow;
     }
 }
