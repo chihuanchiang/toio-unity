@@ -69,16 +69,18 @@ public class Player {
     }
 
     private void AddStr() {
-        Stat.Str += 10;
+        Stat.Str += 20;
         First.Cube.TurnLedOn(255, 0, 0, 500);
         First.Cube.PlayPresetSound(0);
     }
 
     private void AddLuck() {
-        // Luck should be no more than 90
-        if (Stat.Luck <= 80) Stat.Luck += 10;
-        First.Cube.TurnLedOn(255, 140, 40, 500);
-        First.Cube.PlayPresetSound(0);
+        // Luck should be no more than 60
+        if (Stat.Luck < 60) {
+            Stat.Luck += 15;
+            First.Cube.TurnLedOn(255, 140, 40, 500);
+            First.Cube.PlayPresetSound(0);
+        }
     }
 
     private void GoToPrison() {

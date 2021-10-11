@@ -64,9 +64,9 @@ public class Battle {
                 break;
 
             case Phase.Charge:
-                _player[_turn].Stat.Energy += _player[_turn].Second.Cube.shakeLevel * (100f + _player[_turn].Stat.Str) / 100f * (float)Time.deltaTime;
+                _player[_turn].Stat.Energy += _player[_turn].Second.Cube.shakeLevel * 1.3f * (100f + _player[_turn].Stat.Str) / 100f * (float)Time.deltaTime;
                 int en = (int)_player[_turn].Stat.Energy;
-                _player[_turn].First.Handle.Move(0, 10 + en * 20, 200);
+                _player[_turn].First.Handle.Move(0, 10 + en * 10, 200);
                 if (_elapsedTime > _chargeTime) {
                     _phase = (Random.Range(0, 100) < _player[_invTurn].Stat.Luck)?Phase.Miss:Phase.Attack;
                 }
