@@ -185,9 +185,11 @@ public class SimpleGraphScene : MonoBehaviour
                     if (_player[0].Win()) {
                         _turn = 0;
                         _phase = 3;
+                        ui.ShowVictoryMsg(1);
                     } else if (_player[1].Win()) {
                         _turn = 1;
                         _phase = 3;
+                        ui.ShowVictoryMsg(2);
                     } else {
                         _phase = 0;
                     }

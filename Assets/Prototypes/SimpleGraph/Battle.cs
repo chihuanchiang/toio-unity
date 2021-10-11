@@ -45,6 +45,7 @@ public class Battle {
         Movement mv, mv1, mv2;
 
         GameObject.Find("scene").GetComponent<UI>().ShowBattleStats(_player[0].Stat.Hp, (int)_player[0].Stat.Energy, _player[0].Stat.Luck, _player[1].Stat.Hp, (int)_player[1].Stat.Energy, _player[1].Stat.Luck);
+        GameObject.Find("scene").GetComponent<UI>().ShowBattlePoint(_player[0].Point, _player[1].Point);
 
         switch (_phase) {
 
