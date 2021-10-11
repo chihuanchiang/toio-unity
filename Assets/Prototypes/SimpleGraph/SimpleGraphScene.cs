@@ -82,6 +82,10 @@ public class SimpleGraphScene : MonoBehaviour
         // Set up prison
         _prison = new Prison(_player, _graph.V[4]);
 
+        // Set up double-tap listener
+        _player[0].Second.Cube.doubleTapCallback.AddListener("SimpleGraphScene", OnDoubleTap);
+        _player[1].Second.Cube.doubleTapCallback.AddListener("SimpleGraphScene", OnDoubleTap);
+
         // Set the home spot of each character
         _player[0].First.Home = _graph.V[0];
         _player[1].First.Home = _graph.V[2];
@@ -114,7 +118,7 @@ public class SimpleGraphScene : MonoBehaviour
                             p.First.UpdateNext();
                         }
                         _phase = 1;
-                        ui.TurnOnMoveBtn();
+                        // ui.TurnOnMoveBtn();
                     }
                 }
                 break;
@@ -260,6 +264,11 @@ public class SimpleGraphScene : MonoBehaviour
     public void RollDice()
     {
         Debug.Log("Roll A DICE");
+        _inputStatus = 1;
+    }
+
+    void OnDoubleTap(Cube c) {
+        Debug.Log("Double-tap");
         _inputStatus = 1;
     }
 }
